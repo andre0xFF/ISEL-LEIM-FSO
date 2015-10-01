@@ -49,7 +49,7 @@ public class trabalho01JFrame extends JFrame {
 	 * Initializes variables
 	 */
 	void initVariables() {
-		robotName = "Jorge Jesus";
+		robotName = "Moura Guedes";
 		offsetLeft = 0;
 		offsetRight = 0;
 		radius = 0;
@@ -108,7 +108,8 @@ public class trabalho01JFrame extends JFrame {
 		txtOffsetEsquerda = new JTextField();
 		txtOffsetEsquerda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				offsetLeft = Integer.parseInt(txtOffsetEsquerda.getText());
+				offsetLeft = stringToInteger(txtOffsetEsquerda.getText());
+				offsetLeft = stringToInteger(txtOffsetEsquerda.getText());
 				log("Offset esquerda:" + Integer.toString(offsetLeft));
 			}
 		});
@@ -119,7 +120,7 @@ public class trabalho01JFrame extends JFrame {
 		txtOffsetDireita = new JTextField();
 		txtOffsetDireita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				offsetRight = Integer.parseInt(txtOffsetDireita.getText());
+				offsetRight = stringToInteger(txtOffsetDireita.getText());
 				log("Offset direita:" + Integer.toString(offsetRight));
 			}	
 		});
@@ -176,7 +177,7 @@ public class trabalho01JFrame extends JFrame {
 		txtRaio = new JTextField();
 		txtRaio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				radius = Integer.parseInt(txtRaio.getText());
+				radius = stringToInteger(txtRaio.getText());
 				log("Raio:" + Integer.toString(radius));
 			}
 		});
@@ -191,7 +192,7 @@ public class trabalho01JFrame extends JFrame {
 		txtAngulo = new JTextField();
 		txtAngulo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				angle = Integer.parseInt(txtAngulo.getText());
+				angle = stringToInteger(txtAngulo.getText());
 				log("Angulo:" + Integer.toString(angle));
 			}
 		});
@@ -206,7 +207,7 @@ public class trabalho01JFrame extends JFrame {
 		txtDistancia = new JTextField();
 		txtDistancia.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				distance = Integer.parseInt(txtDistancia.getText());
+				distance = stringToInteger(txtDistancia.getText());
 				log("Distancia:" + Integer.toString(distance));
 			}
 		});
@@ -217,7 +218,7 @@ public class trabalho01JFrame extends JFrame {
 		JButton btnFrente = new JButton("Frente");
 		btnFrente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				moveRobot(Integer.parseInt(txtDistancia.getText()), 0, 0, btnFrente.getText());
+				moveRobot(stringToInteger(txtDistancia.getText()), 0, 0, btnFrente.getText());
 			}
 		});
 		btnFrente.setBackground(Color.GREEN);
@@ -227,7 +228,7 @@ public class trabalho01JFrame extends JFrame {
 		btnEsquerda = new JButton("Esquerda");
 		btnEsquerda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				moveRobot(Integer.parseInt(txtDistancia.getText()), Integer.parseInt(txtRaio.getText()), Integer.parseInt(txtDistancia.getText()), btnEsquerda.getText());
+				moveRobot(stringToInteger(txtDistancia.getText()), stringToInteger(txtRaio.getText()), stringToInteger(txtDistancia.getText()), btnEsquerda.getText());
 			}
 		});
 		btnEsquerda.setBackground(Color.YELLOW);
@@ -242,7 +243,7 @@ public class trabalho01JFrame extends JFrame {
 		btnDireita = new JButton("Direita");
 		btnDireita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				moveRobot(Integer.parseInt(txtDistancia.getText()), Integer.parseInt(txtRaio.getText()), Integer.parseInt(txtDistancia.getText()), btnDireita.getText());
+				moveRobot(stringToInteger(txtDistancia.getText()), stringToInteger(txtRaio.getText()), stringToInteger(txtDistancia.getText()), btnDireita.getText());
 			}
 		});
 		btnDireita.setBackground(Color.MAGENTA);
@@ -252,7 +253,7 @@ public class trabalho01JFrame extends JFrame {
 		btnRectaguarda = new JButton("Retaguarda");
 		btnRectaguarda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				moveRobot(Integer.parseInt(txtDistancia.getText()), 0, 0, btnRectaguarda.getText());
+				moveRobot(stringToInteger(txtDistancia.getText()), 0, 0, btnRectaguarda.getText());
 			}
 		});
 		btnRectaguarda.setBackground(Color.BLUE);
@@ -268,6 +269,16 @@ public class trabalho01JFrame extends JFrame {
 		//}
 	}
 	
+	int stringToInteger(String s) {
+		try {
+			return Integer.parseInt(s);
+		}
+		catch (NumberFormatException e) {
+			return 0;
+		}
+		
+	}
+	
 	void log(String v) {
 		if (!chckbxDebug.isSelected()) {
 			return;
@@ -279,14 +290,14 @@ public class trabalho01JFrame extends JFrame {
 	}
 	
 	void moveRobot(int distance, int radius, int angle, String direction) {
-		if (!rdbtnOnOff.isSelected()) {
+		if (!onOff) {
 			return;
 		}
 		
 		this.distance = distance;
 		this.angle = angle;
 		this.radius = radius;
-		log("[" + direction + "] distancia: " + this.distance + " anglo: " + this.angle + " radius: " + this.radius);
+		log("[" + direction + "] distancia: " + this.distance + " angulo: " + this.angle + " raio: " + this.radius);
 	}
 	
 }
