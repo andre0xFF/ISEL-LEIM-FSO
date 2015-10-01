@@ -1,3 +1,3 @@
 # ISEL: Fundamentos de Sistemas Operativos
 	
-	This is the first assignment. Keep in mind that this is very hard-coded.
+	This folder contais all assignments of this class.
