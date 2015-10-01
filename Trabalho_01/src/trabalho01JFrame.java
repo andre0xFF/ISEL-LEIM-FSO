@@ -133,6 +133,11 @@ public class trabalho01JFrame extends JFrame {
 		contentPane.add(lblOffsetDireita);
 		
 		chckbxDebug = new JCheckBox("Debug");
+		chckbxDebug.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				debug = chckbxDebug.isSelected();
+			}
+		});
 		chckbxDebug.setBounds(12, 243, 77, 23);
 		contentPane.add(chckbxDebug);
 		
@@ -280,13 +285,11 @@ public class trabalho01JFrame extends JFrame {
 	}
 	
 	void log(String v) {
-		if (!chckbxDebug.isSelected()) {
+		if (!debug) {
 			return;
 		}
 		
-		if (debug) {
-			txtLog.setText(v);
-		}
+		txtLog.setText(v);
 	}
 	
 	void moveRobot(int distance, int radius, int angle, String direction) {
