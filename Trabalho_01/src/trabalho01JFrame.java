@@ -336,21 +336,42 @@ public class trabalho01JFrame extends JFrame {
 		//}
 	}
 	
-	protected void robotOnOff() {	
-		try {
-			if(!onOff) {
-				robot.OpenNXT(robotName);
-			} else {
-				robot.CloseNXT();
-			}
-		} catch (Exception e) { 
-			log("Erro!");
-			return; 
-		}
-		
-		
+	/**
+	 * Switches the robot on/off
+	 * @param status True if on; False if off 
+	 */
+	protected void robotOnOff(Boolean status) {			
+		status = true ? robotOn() : robotOff();
 		updateGuiComponents();
 		log("On/Off:" + Boolean.toString(onOff));
+	}
+	
+	/**
+	 * Switches the robot on
+	 * @return True if connected
+	 */
+	protected Boolean robotOn() {
+		try {
+			robot.OpenNXT(robotName);
+			return true;
+		} catch(Exception e) {  
+			log("Erro!"); 
+			return false;
+		}
+	}
+	
+	/**
+	 * Switches the robot off
+	 * @return True if disconnected
+	 */
+	protected Boolean robotOff() {
+		try {
+			robot.CloseNXT();
+			return true;
+		} catch(Exception e) { 
+			log("Erro!"); 
+			return false;
+		}
 	}
 
 	int stringToInteger(String s) {
