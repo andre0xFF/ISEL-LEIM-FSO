@@ -103,12 +103,10 @@ public class trabalho01JFrame extends JFrame {
 		chckbxDebug.setSelected(debug);
 		txtLog.setText(debugText);
 		
-
 		btnFrente.setEnabled(onOff);
 		btnDireita.setEnabled(onOff);
 		btnEsquerda.setEnabled(onOff);
 		btnRectaguarda.setEnabled(onOff);
-
 	}
 
 	/**
@@ -340,7 +338,7 @@ public class trabalho01JFrame extends JFrame {
 	
 	protected void robotOnOff() {	
 		try {
-			if(onOff) {
+			if(!onOff) {
 				robot.OpenNXT(robotName);
 			} else {
 				robot.CloseNXT();
