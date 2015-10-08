@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 @SuppressWarnings("serial")
 public class trabalho01JFrame extends JFrame {
 
+	//#region Properties
 	private JPanel contentPane;
 	private JTextField txtOffsetEsquerda;
 	private JTextField txtOffsetDireita;
@@ -72,6 +73,7 @@ public class trabalho01JFrame extends JFrame {
 	private boolean onOff;
 	private boolean debug;
 	RobotLego robot;
+	//#endregion
 	
 	/**
 	 * Initializes variables
@@ -110,7 +112,7 @@ public class trabalho01JFrame extends JFrame {
 	}
 
 	/**
-	 * Launch the application.
+	 * Launches the application
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -143,7 +145,6 @@ public class trabalho01JFrame extends JFrame {
 		txtOffsetEsquerda = new JTextField();
 		txtOffsetEsquerda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				offsetLeft = stringToInteger(txtOffsetEsquerda.getText());
 				offsetLeft = stringToInteger(txtOffsetEsquerda.getText());
 				log("Offset esquerda:" + Integer.toString(offsetLeft));
 			}
@@ -204,7 +205,7 @@ public class trabalho01JFrame extends JFrame {
 		rdbtnOnOff.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				onOff = rdbtnOnOff.isSelected();
-				robotOnOff();
+				robotOnOff(!onOff);
 			}
 		});
 		rdbtnOnOff.setBounds(258, 35, 70, 23);
@@ -258,7 +259,11 @@ public class trabalho01JFrame extends JFrame {
 		btnFrente = new JButton("Frente");
 		btnFrente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotMove(stringToInteger(txtDistancia.getText()), 0, 0, btnFrente.getText(), 0, 0);
+				robotMove(
+						stringToInteger(txtDistancia.getText()),
+						0, 0,
+						8,
+						offsetLeft, offsetRight);
 			}
 		});
 		btnFrente.setBackground(Color.GREEN);
@@ -268,12 +273,12 @@ public class trabalho01JFrame extends JFrame {
 		btnEsquerda = new JButton("Esquerda");
 		btnEsquerda.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotMove(stringToInteger(
-						txtDistancia.getText()),
+				robotMove(
+						stringToInteger(txtDistancia.getText()),
 						stringToInteger(txtRaio.getText()), 
 						stringToInteger(txtDistancia.getText()), 
-						btnEsquerda.getText(),
-						0, 0
+						4,
+						offsetLeft, offsetRight
 						);
 			}
 		});
@@ -284,11 +289,11 @@ public class trabalho01JFrame extends JFrame {
 		btnParar = new JButton("Parar");
 		btnParar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotMove(stringToInteger(
-						txtDistancia.getText()), 
+				robotMove(
+						stringToInteger(txtDistancia.getText()), 
 						0, 0,
-						btnParar.getText(),
-						0, 0
+						5,
+						offsetLeft, offsetRight
 						);
 			}
 		});
@@ -299,12 +304,12 @@ public class trabalho01JFrame extends JFrame {
 		btnDireita = new JButton("Direita");
 		btnDireita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotMove(stringToInteger(
-						txtDistancia.getText()), 
+				robotMove(
+						stringToInteger(txtDistancia.getText()), 
 						stringToInteger(txtRaio.getText()), 
 						stringToInteger(txtDistancia.getText()), 
-						btnDireita.getText(),
-						0, 0
+						6,
+						offsetLeft, offsetRight
 						);
 			}
 		});
@@ -318,8 +323,8 @@ public class trabalho01JFrame extends JFrame {
 				robotMove(
 						stringToInteger(txtDistancia.getText()), 
 						0, 0, 
-						btnRectaguarda.getText(),
-						0, 0
+						2,
+						offsetLeft, offsetRight
 						);
 			}
 		});
@@ -329,26 +334,22 @@ public class trabalho01JFrame extends JFrame {
 		
 		initVariables();
 		updateGuiComponents();
-		
-		//if (txtRobot.getText() instanceof String)
-		//{
-			
-		//}
 	}
 	
 	/**
 	 * Switches the robot on/off
 	 * @param status True if on; False if off 
 	 */
+	@SuppressWarnings("unused")
 	protected void robotOnOff(Boolean status) {			
-		status = true ? robotOn() : robotOff();
+		onOff = (status == true) ? !robotOff() : robotOn();
 		updateGuiComponents();
-		log("On/Off:" + Boolean.toString(onOff));
+		log("On/Off: " + Boolean.toString(onOff));
 	}
 	
 	/**
 	 * Switches the robot on
-	 * @return True if connected
+	 * @return True if connected successfully
 	 */
 	protected Boolean robotOn() {
 		try {
@@ -362,7 +363,7 @@ public class trabalho01JFrame extends JFrame {
 	
 	/**
 	 * Switches the robot off
-	 * @return True if disconnected
+	 * @return True if disconnected successfully
 	 */
 	protected Boolean robotOff() {
 		try {
@@ -392,27 +393,27 @@ public class trabalho01JFrame extends JFrame {
 		txtLog.setText(v);
 	}
 	
-	void robotMove(int distance, int radius, int angle, String direction, int offsetL, int offsetR) {
+	void robotMove(int distance, int radius, int angle, int direction, int offsetL, int offsetR) {
 		if (!onOff) {
 			return;
 		}
 		
 		switch(direction) {
-			case "Frente":
+			case 8:
 				robot.Reta(distance);
 				break;
-			case "Retaguarda":
+			case 2:
 				robot.Reta(-distance);
 				break;
-			case "Direita":
+			case 6:
 				robot.CurvarDireita(radius, angle);
 				robot.AjustarVMD(offsetR);
 				break;
-			case "Esquerda":
+			case 4:
 				robot.CurvarEsquerda(radius, angle);
 				robot.AjustarVME(offsetL);
 				break;
-			case "Parar":
+			case 5:
 				robot.Parar(true);
 		}
 		
