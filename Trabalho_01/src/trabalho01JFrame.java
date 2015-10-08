@@ -77,7 +77,7 @@ public class trabalho01JFrame extends JFrame {
 	 * Initializes variables
 	 */
 	void initVariables() {
-		robotName = "Moura Guedes";
+		robotName = "Desenha1";
 		offsetLeft = 0;
 		offsetRight = 0;
 		radius = 0;
