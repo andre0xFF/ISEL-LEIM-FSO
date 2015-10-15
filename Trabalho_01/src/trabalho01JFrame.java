@@ -15,7 +15,7 @@
  * 
  * Comandos do robot podem ser executados com algum delay
  * 
- * Robot executa até 16 comandos assincronizados, depois de atingir
+ * Robot executa até 16 comandos assincronos, depois de atingir
  * o máximo o mais antigo é eliminado e adiciona o novo 
  * (First In First Out)
  */
@@ -36,10 +36,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.event.ActionListener;
+import java.util.Timer;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class trabalho01JFrame extends JFrame {
+public class trabalho01JFrame extends JFrame implements Runnable {
 
 	//#region Properties
 	private JPanel contentPane;
@@ -59,10 +60,8 @@ public class trabalho01JFrame extends JFrame {
 	private JButton btnDireita;
 	private JButton btnRectaguarda;
 	private JButton btnFrente;
-	
-	JCheckBox chckbxDebug;
-	JRadioButton rdbtnOnOff;
-	
+	private JCheckBox chckbxDebug;
+	private JRadioButton rdbtnOnOff;	
 	private int offsetLeft;
 	private int offsetRight;
 	private String robotName;
@@ -86,9 +85,10 @@ public class trabalho01JFrame extends JFrame {
 		angle = 0;
 		distance = 0;
 		debug = true;
-		onOff = true;
+		onOff = false;
 		
-		robot = new RobotLego();
+		//robot = new RobotLego();
+		robot = null;
 	}
 	
 	/**
@@ -114,21 +114,25 @@ public class trabalho01JFrame extends JFrame {
 	/**
 	 * Launches the application
 	 */
+	public void run() {
+		//try {
+		//	trabalho01JFrame frame = new trabalho01JFrame();
+		//	frame.setVisible(true);
+		//} catch (Exception e) {
+		//	e.printStackTrace();
+		//}
+	}
+	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					trabalho01JFrame frame = new trabalho01JFrame();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		trabalho01JFrame work = new trabalho01JFrame();
+		work.run();
+		//EventQueue.invokeLater(new Runnable() {
+			
+		//});
 	}
 
 	/**
-	 * Create the frame.
+	 * Create the frame
 	 */
 	public trabalho01JFrame() {	
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -332,6 +336,7 @@ public class trabalho01JFrame extends JFrame {
 		btnRectaguarda.setBounds(178, 199, 117, 40);
 		contentPane.add(btnRectaguarda);
 		
+		this.setVisible(true);
 		initVariables();
 		updateGuiComponents();
 	}
@@ -340,7 +345,6 @@ public class trabalho01JFrame extends JFrame {
 	 * Switches the robot on/off
 	 * @param status True if on; False if off 
 	 */
-	@SuppressWarnings("unused")
 	protected void robotOnOff(Boolean status) {			
 		onOff = (status == true) ? !robotOff() : robotOn();
 		updateGuiComponents();
