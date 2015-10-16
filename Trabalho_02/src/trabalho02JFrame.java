@@ -85,7 +85,6 @@ public class trabalho02JFrame extends JFrame {
 	}
 
 	protected void guiRunProcess() {
-		//"c:\desktop\ficheiro.jar.exe".contains(".exe");	
 		if(txtProcess.getText() == "")
 			return;
 		
@@ -106,12 +105,14 @@ public class trabalho02JFrame extends JFrame {
             @Override
             public void run() {
                 lblProcesses.setText(Integer.toString(pm.getNumberOfProcessesAlive()));
+                pm.trimDeadProcesses();
+                // debug processo terminado
             }
 
         };
         
         timer.schedule(task, 0, 5000);
-		
+
 		updateGui();
 		log("Executar processo: " + txtProcess.getText());	
 	}

@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.TimerTask;
 
 public class ProcessManager {
 	private ArrayList<Process> processList = new ArrayList<>();
@@ -38,16 +37,16 @@ public class ProcessManager {
 		return true;
 	}
 	
-	private String terminatedProcess() {
-		return null;
-	}
-	
-	public static ArrayList<Process> trimDeadProcesses(ArrayList<Process> array) {
-		for(int i = 0; i < array.size(); i++)
-			if(!array.get(i).isAlive())
-				array.remove(i);
+	public int trimDeadProcesses() {
+		int c = 0;
+		for(int i = 0; i < processList.size(); i++)
+			if(!processList.get(i).isAlive())
+			{
+				processList.remove(i);
+				c++;
+			}
 		
-		return array;
+		return c;
 	}
 	
 	public int getNumberOfProcessesAlive() {
