@@ -1,5 +1,3 @@
-import java.io.IOException;
-
 public class FSOProcess {
 	private String path;
 	private Process process;
@@ -12,6 +10,15 @@ public class FSOProcess {
 		return this.process;
 	}
 	
+	public void setProcess(String path, Process process) {
+		this.path = path;
+		this.process = process;		
+	}
+	
+	public FSOProcess(String path, Process process) {
+		setProcess(path, process);
+	}
+	/*
 	public Boolean openProcess(String path) {
 		if(path.endsWith(".jar"))
 			return runJavaProcess(path);
@@ -20,7 +27,7 @@ public class FSOProcess {
 		
 		return false;
 	}
-	
+
 	private Boolean runWinProcess(String path) {
 		ProcessBuilder pb = new ProcessBuilder(path);
 		process = null;
@@ -45,4 +52,5 @@ public class FSOProcess {
 			return false;
 		}
 	}
+	*/
 }

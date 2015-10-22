@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ProcessManager {
@@ -7,6 +8,10 @@ public class ProcessManager {
 	
 	public int getNumberOfProcesses() {
 		return this.processList.size();
+	}
+	
+	private void addProcess(FSOProcess fsop) {
+		processList.add(fsop);
 	}
 	
 	public String trimDeadProcesses() {
@@ -30,15 +35,40 @@ public class ProcessManager {
 		
 		return c;
 	}
-	
+
 	public Boolean openProcess(String path) {
-		FSOProcess process = new FSOProcess();
+		if(path.endsWith(".jar"))
+			return runJavaProcess(path);
+		else if(path.endsWith(".exe"))
+			return runWinProcess(path);
 		
-		if(!process.openProcess(path)) {
+		return false;
+	}
+	
+	private Boolean runWinProcess(String path) {
+		ProcessBuilder pb = new ProcessBuilder(path);
+		Process process = null;
+		
+		try {
+			process = pb.start();
+			FSOProcess fsop = new FSOProcess(path, process);
+			addProcess(fsop);
+			return true;
+		} catch (IOException e) {
 			return false;
 		}
+	}
+	
+	private Boolean runJavaProcess(String path) {
+		Process process = null;
 		
-		processList.add(process);
-		return true;
+		try {
+			process = Runtime.getRuntime().exec("java -jar " + path);
+			FSOProcess fsop = new FSOProcess(path, process);
+			addProcess(fsop);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 }

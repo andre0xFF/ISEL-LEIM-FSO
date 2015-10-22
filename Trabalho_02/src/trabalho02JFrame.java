@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class trabalho02JFrame extends JFrame {
@@ -100,7 +101,7 @@ public class trabalho02JFrame extends JFrame {
 		
 		String processPath = txtProcess.getText();
 		
-		if(!pm.openProcess(processPath)) {
+		if(!verifyFilePath(processPath) || !pm.openProcess(processPath)) {
 			log("Falha ao executar o processo " + getProcessName(processPath));
 			return;
 		}
@@ -127,6 +128,15 @@ public class trabalho02JFrame extends JFrame {
 		log("Sucesso a executar o processo " + getProcessName(txtProcess.getText()));	
 	}
 	
+	private boolean verifyFilePath(String processPath) {
+		File fP = new File(processPath);
+		
+		if(!fP.exists())
+			return false;
+		
+		return true;
+	}
+
 	protected void log(String text) {
 		if(!lblDebug.isEnabled())
 			return;
