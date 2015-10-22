@@ -11,6 +11,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 @SuppressWarnings("serial")
 public class trabalho02JFrame extends JFrame {
@@ -47,6 +49,14 @@ public class trabalho02JFrame extends JFrame {
 		contentPane.add(lblProcess);
 		
 		txtProcess = new JTextField();
+		txtProcess.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					log(getProcessName(txtProcess.getText()));
+				}
+			}
+		});
 		txtProcess.setText("//home//andrew//Workspace//Trabalho_01.jar");
 		txtProcess.setBounds(100, 10, 328, 53);
 		contentPane.add(txtProcess);
@@ -102,8 +112,9 @@ public class trabalho02JFrame extends JFrame {
             public void run() {
             	String r = pm.trimDeadProcesses();
             	
-            	if(r == null)
+            	if(r == null) {
             		return;
+            	}
             	           
                 log("Terminou o processo " + getProcessName(r));
                 lblProcesses.setText(Integer.toString(pm.getNumberOfProcessesAlive()));
