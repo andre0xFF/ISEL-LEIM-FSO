@@ -111,6 +111,7 @@ public class trabalho02JFrame extends JFrame {
 
             @Override
             public void run() {
+            	log("");
             	String r = pm.trimDeadProcesses();
             	
             	if(r == null) {
@@ -130,11 +131,7 @@ public class trabalho02JFrame extends JFrame {
 	
 	private boolean verifyFilePath(String processPath) {
 		File fP = new File(processPath);
-		
-		if(!fP.exists())
-			return false;
-		
-		return true;
+		return fP.exists();
 	}
 
 	protected void log(String text) {
