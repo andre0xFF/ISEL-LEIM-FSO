@@ -95,7 +95,7 @@ public class trabalho02JFrame extends JFrame {
 		contentPane.add(lblDebug);
 	}
 
-	protected void guiRunProcess() {
+	private void guiRunProcess() {
 		if(txtProcess.getText() == "")
 			return;
 		
@@ -129,24 +129,24 @@ public class trabalho02JFrame extends JFrame {
 		log("Sucesso a executar o processo " + getProcessName(txtProcess.getText()));	
 	}
 	
-	private boolean verifyFilePath(String processPath) {
+	protected boolean verifyFilePath(String processPath) {
 		File fP = new File(processPath);
 		return fP.exists();
 	}
 
-	protected void log(String text) {
+	private void log(String text) {
 		if(!lblDebug.isEnabled())
 			return;
 		
 		lblDebug.setText(text);
 	}
 
-	protected void toggleDebug() {
+	private void toggleDebug() {
 		lblDebug.setEnabled(!lblDebug.isEnabled());
 		lblDebug.setText("Debug enabled? " + Boolean.toString(lblDebug.isEnabled()));
 	}
 	
-	protected void updateGui() {
+	private void updateGui() {
 		lblProcesses.setText(Integer.toString(pm.getNumberOfProcesses()));
 	}
 	
