@@ -88,14 +88,10 @@ public class trabalho02JFrame extends JFrame {
 		if(txtProcess.getText() == "")
 			return;
 		
-		Boolean r = null;
-		if(txtProcess.getText().endsWith(".jar"))
-			r = pm.runJavaProcess(txtProcess.getText());
-		else if(txtProcess.getText().endsWith(".exe"))
-			r = pm.runWinProcess(txtProcess.getText());
-
-		if(!r) {
-			log("Failed to run process");
+		String processPath = txtProcess.getText();
+		
+		if(!pm.openProcess(processPath)) {
+			log("Falha ao executar o processo " + getProcessName(processPath));
 			return;
 		}
 		
@@ -104,17 +100,20 @@ public class trabalho02JFrame extends JFrame {
 
             @Override
             public void run() {
+            	String r = pm.trimDeadProcesses();
+            	
+            	if(r == null)
+            		return;
+            	           
+                log("Terminou o processo " + getProcessName(r));
                 lblProcesses.setText(Integer.toString(pm.getNumberOfProcessesAlive()));
-                pm.trimDeadProcesses();
-                // debug processo terminado
             }
-
         };
         
         timer.schedule(task, 0, 5000);
 
 		updateGui();
-		log("Executar processo: " + txtProcess.getText());	
+		log("Sucesso a executar o processo " + getProcessName(txtProcess.getText()));	
 	}
 	
 	protected void log(String text) {
@@ -131,5 +130,12 @@ public class trabalho02JFrame extends JFrame {
 	
 	protected void updateGui() {
 		lblProcesses.setText(Integer.toString(pm.getNumberOfProcesses()));
+	}
+	
+	protected String getProcessName(String processPath) {
+		return processPath.substring(
+				processPath.lastIndexOf('/') + 1,
+				processPath.length()
+				);
 	}
  }

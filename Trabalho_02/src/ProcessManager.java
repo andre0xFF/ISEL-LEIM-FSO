@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 public class ProcessManager {
-	private ArrayList<Process> processList = new ArrayList<>();
+	private ArrayList<FSOProcess> processList = new ArrayList<>();
 	
 	ProcessManager() { }
 	
@@ -9,53 +9,36 @@ public class ProcessManager {
 		return this.processList.size();
 	}
 	
-	public Boolean runJavaProcess(String path) {
-		Process p = null;
-		
-		try {
-			p = Runtime.getRuntime().exec("java -jar " + path);
-			
-		} catch (Exception e) {
-			return false;
-		}
-		
-		this.processList.add(p);
-		return true;
-	}
-	
-	public Boolean runWinProcess(String path) {
-		ProcessBuilder pb = new ProcessBuilder(path);
-		Process p = null;
-		
-		try {
-			p = pb.start();
-		} catch (Exception e) {
-			return false;
-		}
-		
-		this.processList.add(p);
-		return true;
-	}
-	
-	public int trimDeadProcesses() {
-		int c = 0;
+	public String trimDeadProcesses() {
 		for(int i = 0; i < processList.size(); i++)
-			if(!processList.get(i).isAlive())
+			if(!processList.get(i).getProcess().isAlive())
 			{
+				String processName = processList.get(i).getPath();
 				processList.remove(i);
-				c++;
+				return processName;
 			}
 		
-		return c;
+		return null;
 	}
 	
 	public int getNumberOfProcessesAlive() {
 		int c = 0;
 		
 		for(int i = 0; i < processList.size(); i++)
-			if(processList.get(i).isAlive())
-				c++;		
+			if(processList.get(i).getProcess().isAlive())
+				c++;
 		
 		return c;
+	}
+	
+	public Boolean openProcess(String path) {
+		FSOProcess process = new FSOProcess();
+		
+		if(!process.openProcess(path)) {
+			return false;
+		}
+		
+		processList.add(process);
+		return true;
 	}
 }
