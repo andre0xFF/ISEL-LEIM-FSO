@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class ProcessManager {
 	private ArrayList<FSOProcess> processList = new ArrayList<>();
 	
-	ProcessManager() { }
+	public ProcessManager() { }
 	
 	public int getNumberOfProcesses() {
 		return this.processList.size();
