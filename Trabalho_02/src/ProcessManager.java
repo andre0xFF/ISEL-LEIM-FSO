@@ -14,12 +14,16 @@ public class ProcessManager {
 		processList.add(fsop);
 	}
 	
+	private void rmProcess(FSOProcess fsop) {
+		processList.remove(fsop);
+	}
+	
 	public String trimDeadProcesses() {
 		for(int i = 0; i < processList.size(); i++)
 			if(!processList.get(i).getProcess().isAlive())
 			{
 				String processName = processList.get(i).getPath();
-				processList.remove(i);
+				rmProcess(processList.get(i));
 				return processName;
 			}
 		
