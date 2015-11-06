@@ -52,8 +52,6 @@ public class MyRobotLego {
 			if (liveMode) {
 				robot.Reta(units);
 			}
-			
-			mutex.release();
 	}
 	
 	public void CurvarDireita(int radius, int angle) {
