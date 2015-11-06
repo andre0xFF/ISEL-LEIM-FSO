@@ -309,14 +309,6 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		this.setVisible(true);
 		initVariables();
 		updateGuiComponents();
-		/*
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				robot.CloseNXT();
-			}
-		});
-		*/
 		
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override

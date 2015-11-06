@@ -7,7 +7,7 @@ public class MyRobotLego {
 	private RobotLego robot;
 	private MutexCOM mutex;
 	
-	public MyRobotLego(JTextField l, Boolean liveMode) {
+	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
 		this.liveMode = liveMode;
 		this.mutex = new MutexCOM();
@@ -15,7 +15,6 @@ public class MyRobotLego {
 		if(liveMode) {
 			robot = new RobotLego();
 		}
-		
 	}
 	
 	public boolean OpenNXT(String name) {
