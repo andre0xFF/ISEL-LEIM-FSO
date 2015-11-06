@@ -1,30 +1,6 @@
-/** RobotLego info
- * reta(distancia)
- * curvarDireita(raio, angulo)
- * curvarEsquerda(raio, angulo)
- * parar(true) - Parar assincrono "imediato"
- * parar(false) - Para sincrono "depois do fim dos outros comandos"
- * ajustarVMD(offset)
- * ajustarVME(offset)
- * 
- * Boolean openNXT(String nomeRobot) inicia ligacao bluetooth
- * * true se a ligação for estabelicida
- * * false se a ligação não for estabelecida
- * 
- * void closeNXT() terminar ligacao bluetooth
- * 
- * Comandos do robot podem ser executados com algum delay
- * 
- * Robot executa até 16 comandos assincronos, depois de atingir
- * o máximo o mais antigo é eliminado e adiciona o novo 
- * (First In First Out)
- */
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import RobotLego.RobotLego;
-
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
@@ -35,7 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
-public class trabalho01JFrame extends JFrame implements Runnable {
+public class trabalho03JFrame extends JFrame implements Runnable {
 
 	//#region Properties
 	private JPanel contentPane;
@@ -66,7 +42,7 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 	private int angle;
 	private boolean onOff;
 	private boolean debug;
-	RobotLego robot;
+	MyRobotLego robot;
 	//#endregion
 	
 	/**
@@ -82,8 +58,7 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 		debug = true;
 		onOff = false;
 		
-		//robot = new RobotLego();
-		robot = null;
+		robot = new MyRobotLego(txtLog, false);
 	}
 	
 	/**
@@ -119,7 +94,7 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 	}
 	
 	public static void main(String[] args) {
-		trabalho01JFrame work = new trabalho01JFrame();
+		trabalho03JFrame work = new trabalho03JFrame();
 		work.run();
 		//EventQueue.invokeLater(new Runnable() {
 			
@@ -129,7 +104,7 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 	/**
 	 * Create the frame
 	 */
-	public trabalho01JFrame() {	
+	public trabalho03JFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -334,14 +309,31 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 		this.setVisible(true);
 		initVariables();
 		updateGuiComponents();
+		/*
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				robot.CloseNXT();
+			}
+		});
+		*/
+		
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				if(onOff) {
+					robot.CloseNXT();
+				}
+			}
+		});
 	}
 	
 	/**
 	 * Switches the robot on/off
 	 * @param status True if on; False if off 
 	 */
-	protected void robotOnOff(Boolean status) {			
-		onOff = (status == true) ? !robotOff() : robotOn();
+	protected void robotOnOff(Boolean status) {
+		onOff = (status == true) ? !robot.CloseNXT() : robot.OpenNXT(robotName);
 		updateGuiComponents();
 		log("On/Off: " + Boolean.toString(onOff));
 	}
@@ -350,20 +342,21 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 	 * Switches the robot on
 	 * @return True if connected successfully
 	 */
+	/*
 	protected Boolean robotOn() {
-		try {
-			robot.OpenNXT(robotName);
+		if(robot.OpenNXT(robotName)) {
 			return true;
-		} catch(Exception e) {  
-			log("Erro!"); 
+		} else {
 			return false;
 		}
 	}
+	*/
 	
 	/**
 	 * Switches the robot off
 	 * @return True if disconnected successfully
 	 */
+	/*
 	protected Boolean robotOff() {
 		try {
 			robot.CloseNXT();
@@ -373,6 +366,7 @@ public class trabalho01JFrame extends JFrame implements Runnable {
 			return false;
 		}
 	}
+	*/
 
 	int stringToInteger(String s) {
 		try {

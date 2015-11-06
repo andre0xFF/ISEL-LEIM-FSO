@@ -58,7 +58,7 @@ public class trabalho02JFrame extends JFrame {
 				}
 			}
 		});
-		txtProcess.setText("//home//andrew//Workspace//Trabalho_01.jar");
+		txtProcess.setText("//home//andrew//Workspace//Trabalho_03.jar");
 		txtProcess.setBounds(100, 10, 328, 53);
 		contentPane.add(txtProcess);
 		txtProcess.setColumns(10);
