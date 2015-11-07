@@ -1,4 +1,4 @@
-package Robot;
+package robot;
 
 import javax.swing.JTextField;
 
