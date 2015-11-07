@@ -1,48 +1,40 @@
+package com;
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
 
-public class MyRobotLego {
+public abstract class MyRobotLego {
 	private JTextField l;
 	private boolean liveMode;
 	private RobotLego robot;
-	private MutexCOM mutex;
 	
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
 		this.liveMode = liveMode;
-		this.mutex = new MutexCOM();
+		
 		
 		if(liveMode) {
 			robot = new RobotLego();
 		}
 	}
 	
-	public boolean OpenNXT(String name) {
-		try {
-			mutex.acquire();
-			
+	public boolean OpenNXT(String name) {			
 			l.setText("Connection is open");
 		
 			if (liveMode) {
 				robot.OpenNXT(name);
 			}
-		
+			
 			return true;
-		}
-		catch(MutexNotFound e) { return false; }
 	}
 	
 	public boolean CloseNXT() {
-		try {
-			mutex.release();
-			l.setText("Connection is closed");
-			
-			if (liveMode) {
-				robot.CloseNXT();
-			}
-			
-			return true;
-		} catch (Exception e) { return false; }
+		l.setText("Connection is closed");
+		
+		if (liveMode) {
+			robot.CloseNXT();
+		}
+		
+		return true;
 	}
 	
 	public void Reta(int units) {

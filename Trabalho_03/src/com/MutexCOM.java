@@ -1,3 +1,4 @@
+package com;
 
 public class MutexCOM extends ProcessCOM {
 	private final String mutexName = "mutex";
