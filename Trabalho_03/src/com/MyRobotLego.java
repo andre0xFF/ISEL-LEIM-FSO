@@ -11,7 +11,6 @@ public abstract class MyRobotLego {
 		this.l = l;
 		this.liveMode = liveMode;
 		
-		
 		if(liveMode) {
 			robot = new RobotLego();
 		}

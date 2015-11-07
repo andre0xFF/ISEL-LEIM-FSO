@@ -3,8 +3,7 @@ package com;
 public class MutexCOM extends ProcessCOM {
 	private final String mutexName = "mutex";
 	
-	public MutexCOM() {
-		
+	public MutexCOM() {	
 		// initialize mutex in memory
 		if(super.receiveMessage().equals("")) {
 			release();
