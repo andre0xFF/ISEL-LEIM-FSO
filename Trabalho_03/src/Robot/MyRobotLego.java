@@ -1,4 +1,4 @@
-package com;
+package Robot;
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
 

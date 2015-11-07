@@ -28,15 +28,3 @@ public class MutexCOM extends ProcessCOM {
 	
 }
 
-
-@SuppressWarnings("serial")
-class MutexNotFound extends Exception {
-
-	public MutexNotFound() { 
-		super("MutexNotFound");
-	}
-	
-	public MutexNotFound(Throwable cause) {
-		super(cause);
-	}
-}

@@ -1,6 +1,9 @@
-package com;
+package Robot;
 
 import javax.swing.JTextField;
+import com.MutexCOM;
+import com.MutexNotFound;
+
 
 public class RobotLegoMemoryMapped extends MyRobotLego {
 	private MutexCOM mutex;

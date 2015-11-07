@@ -42,7 +42,7 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 	private int angle;
 	private boolean onOff;
 	private boolean debug;
-	com.RobotLegoMemoryMapped robot;
+	Robot.RobotLegoMemoryMapped robot;
 	//#endregion
 	
 	/**
@@ -58,7 +58,7 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		debug = true;
 		onOff = false;
 		
-		robot = new com.RobotLegoMemoryMapped(txtLog, false);
+		robot = new Robot.RobotLegoMemoryMapped(txtLog, false);
 	}
 	
 	/**
