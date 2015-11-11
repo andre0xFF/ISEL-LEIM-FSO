@@ -1,3 +1,8 @@
-# ISEL: Fundamentos de Sistemas Operativos 2015/2016
+# Fundamentals of Operating Systems
+(Fundamentos de Sistemas Operativos - FSO)
 	
-	This folder contais all assignments of this class.
+01 - Swing RobotLego GUI
+
+02 - Multiple processes
+
+03 - MappedMemory and Sockets
