@@ -2,7 +2,7 @@ package robot;
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
 
-public abstract class MyRobotLego {
+public class MyRobotLego {
 	private JTextField l;
 	private boolean liveMode;
 	private RobotLego robot;
@@ -17,13 +17,13 @@ public abstract class MyRobotLego {
 	}
 	
 	public boolean OpenNXT(String name) {			
-			l.setText("Connection is open");
+		l.setText("Connection is open");
+	
+		if (liveMode) {
+			robot.OpenNXT(name);
+		}
 		
-			if (liveMode) {
-				robot.OpenNXT(name);
-			}
-			
-			return true;
+		return true;
 	}
 	
 	public boolean CloseNXT() {

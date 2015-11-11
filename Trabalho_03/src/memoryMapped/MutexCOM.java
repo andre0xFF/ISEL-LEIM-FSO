@@ -1,4 +1,4 @@
-package com;
+package memoryMapped;
 
 public class MutexCOM extends ProcessCOM {
 	private final String mutexName = "mutex";

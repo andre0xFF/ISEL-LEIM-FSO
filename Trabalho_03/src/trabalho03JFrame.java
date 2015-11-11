@@ -9,6 +9,9 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import robot.*;
+import sockets.*;
+import memoryMapped.*;
 
 @SuppressWarnings("serial")
 public class trabalho03JFrame extends JFrame implements Runnable {
@@ -42,12 +45,15 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 	private int angle;
 	private boolean onOff;
 	private boolean debug;
-	Robot.RobotLegoMemoryMapped robot;
+	MyRobotLego robot;
+	Server server;
+	private final int comMode = 1;
 	//#endregion
 	
 	/**
 	 * Initializes variables
 	 */
+	@SuppressWarnings("unused")
 	void initVariables() {
 		robotName = "Desenha1";
 		offsetLeft = 0;
@@ -58,9 +64,28 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		debug = true;
 		onOff = false;
 		
-		robot = new Robot.RobotLegoMemoryMapped(txtLog, false);
+		if(comMode == 0) {
+			RobotLegoMemoryMapped robot = new RobotLegoMemoryMapped(txtLog, false);
+		} else {
+			robot = initServerClient(false);
+		}
 	}
 	
+	private RobotLegoSockets initServerClient(boolean b) {
+		if(b) {
+			server = new Server(txtLog);
+		}
+		
+		RobotLegoSockets r = new RobotLegoSockets(txtLog, false);
+		
+		if(!r.start("127.0.0.1")) {
+			r = initServerClient(true);
+			r.start("127.0.0.1");
+		}
+		
+		return r;
+	}
+
 	/**
 	 * Updates GUI components
 	 */

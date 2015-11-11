@@ -1,4 +1,4 @@
-package com;
+package memoryMapped;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

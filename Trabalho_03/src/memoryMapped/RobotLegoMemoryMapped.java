@@ -1,8 +1,7 @@
-package robot;
+package memoryMapped;
 
 import javax.swing.JTextField;
-import com.MutexCOM;
-import com.MutexNotFound;
+import robot.MyRobotLego;
 
 
 public class RobotLegoMemoryMapped extends MyRobotLego {
@@ -10,7 +9,7 @@ public class RobotLegoMemoryMapped extends MyRobotLego {
 	
 	public RobotLegoMemoryMapped(JTextField l, boolean liveMode) {
 		super(l, liveMode);
-		this.mutex = new MutexCOM();
+		mutex = new MutexCOM();
 	}
 	
 	public boolean OpenNXT(String name) {
@@ -30,4 +29,15 @@ public class RobotLegoMemoryMapped extends MyRobotLego {
 		} catch (Exception e) { return false; }
 	}
 
+}
+
+@SuppressWarnings("serial")
+class MutexNotFound extends Exception {
+	public MutexNotFound() { 
+		super("MutexNotFound");
+	}
+	
+	public MutexNotFound(Throwable cause) {
+		super(cause);
+	}
 }
