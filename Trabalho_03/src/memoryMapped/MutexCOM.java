@@ -5,6 +5,9 @@ public class MutexCOM extends ProcessCOM {
 	
 	public MutexCOM() {	
 		// initialize mutex in memory
+		
+		// memory reset
+		//super.sendMessage("");
 		if(super.receiveMessage().equals("")) {
 			release();
 		}

@@ -16,6 +16,10 @@ public class MyRobotLego {
 		}
 	}
 	
+	public boolean OpenNXT(String name, String hostname) {			
+		return OpenNXT(name);
+	}
+	
 	public boolean OpenNXT(String name) {			
 		l.setText("Connection is open");
 	
@@ -45,7 +49,7 @@ public class MyRobotLego {
 	}
 	
 	public void CurvarDireita(int radius, int angle) {
-		l.setText("Turning left" + radius + " radius " + angle + " angle");
+		l.setText("Turning left " + radius + " radius " + angle + " angle");
 		
 		if (liveMode) {
 			robot.CurvarDireita(radius, angle);
@@ -53,24 +57,20 @@ public class MyRobotLego {
 	}
 	
 	public void CurvarEsquerda(int radius, int angle) {
-		l.setText("Turning right" + radius + " radius " + angle + " angle");
+		l.setText("Turning right " + radius + " radius " + angle + " angle");
 		
 		if (liveMode) {
 			robot.CurvarEsquerda(radius, angle);
 		}		
 	}
 	
-	public void AjustarVMD(int offset) {
-		l.setText("Right Offset " + offset + " units");
-		
+	public void AjustarVMD(int offset) {		
 		if (liveMode) {
 			robot.AjustarVMD(offset);
 		}
 	}
 	
-	public void AjustarVME(int offset) {
-		l.setText("Left Offset " + offset + " units");
-		
+	public void AjustarVME(int offset) {		
 		if (liveMode) {
 			robot.AjustarVME(offset);
 		}
@@ -82,6 +82,10 @@ public class MyRobotLego {
 		if (liveMode) {
 			robot.Parar(trueStop);
 		}
+	}
+
+	public void shutdown() {
+		CloseNXT();
 	}
 
 }

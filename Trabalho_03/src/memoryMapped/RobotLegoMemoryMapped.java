@@ -28,6 +28,8 @@ public class RobotLegoMemoryMapped extends MyRobotLego {
 			return true;
 		} catch (Exception e) { return false; }
 	}
+	
+	public void shutdown() { super.shutdown(); }
 
 }
 

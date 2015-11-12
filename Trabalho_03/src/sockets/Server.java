@@ -7,47 +7,67 @@
 
 package sockets;
 
-import robot.MyRobotLego;
 import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.Semaphore;
 import javax.swing.JTextField;
 
-public class Server {
-	public static JTextField l;
-	private ArrayList<ClientHandler> clients;
+public class Server extends Thread {
+	private JTextField l;
+	private ArrayList<ClientHandler> clients = new ArrayList<>();
 	private ServerSocket serverSocket;
-	private final int port = 3366;
+	private final int port = 7755;
+	private Semaphore mutex;
 	
 	public Server(JTextField l) {
 		this.l = l;
-		start();
 	}
 	
-	private void start() {
+	@Override
+	public void run() {
 		try {
-			serverSocket = new ServerSocket(port);
-			l.setText("[x] Starting server");
-			while(true) {
-				l.setText("[x] Waiting for connections");
-				Socket clientSocket = serverSocket.accept();
-				clients.add(new ClientHandler(clientSocket));
+			System.out.println("[x] Starting server");
+			mutex = new Semaphore(1);
+			
+			serverSocket = new ServerSocket(port);		
+			
+			while(true) {				
+				Socket clientSocket = serverSocket.accept();			
+				clients.add(new ClientHandler(clientSocket, l, mutex));	
+				trimClients();
+				System.out.println("[x] Clients connected: " + clients.size());
 			}
 		} catch(IOException e) {
-			l.setText("[x] Failed to accept new client");
-			return; 
+			System.out.println("[x] Failed to accept new client");
+			return;
+		} finally { 
+			// TODO 
 		}
 	}
-	
-	private boolean killClient(InetAddress host) {
+
+	private ClientHandler findClient(String hostname) {
 		for(int i = 0; i < clients.size(); i++) {
-			if(clients.get(i).getHost() == host) {
-				l.setText("[x] Killing client");
-				return clients.get(i).close();
+			if(clients.get(i).getHost().toString().equals(hostname)) {
+				return clients.get(i);
 			}
 		}
 		
-		return false;
+		return null;
+	}
+	
+	private boolean killClient(String hostname) {
+		return findClient(hostname).close();
+	}
+	
+	private void killClient(ClientHandler client) {
+		clients.remove(client);
+	}
+	
+	private void trimClients() {
+		for(int i = 0; i < clients.size(); i++) {
+			if(!clients.get(i).isAlive()) clients.remove(i);
+		}
 	}
 }
 
@@ -55,135 +75,145 @@ class ClientHandler extends Thread {
 	private Socket clientSocket;
 	private PrintWriter out;
 	private BufferedReader in;
-	private MyRobotLego robot;
+	private robot.MyRobotLego robot;
+	private JTextField l;
+	private boolean isAlive;
+	private Semaphore mutex;
 	
-	public ClientHandler(Socket clientSocket) {
+	public ClientHandler(Socket clientSocket, JTextField l, Semaphore mutex) {
 		this.clientSocket = clientSocket;
-		this.robot = new MyRobotLego(Server.l, false);
+		this.l = l;
+		this.mutex = mutex;
+		this.isAlive = true;
 		start();
-		Server.l.setText("test");
 	}
 	
-	public InetAddress getHost() {
-		return this.clientSocket.getInetAddress();
+	public String getHost() {
+		return this.clientSocket.getInetAddress().toString();
+	}
+	
+	@Override
+	public void run() {
+		try {
+			if(!isAlive) return;
+			
+			out = new PrintWriter(clientSocket.getOutputStream(), true); 
+        	in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        
+        	robot = new robot.MyRobotLego(l, false);
+        	
+        	String input;
+        	while((input = in.readLine()) != null) {
+        		int[] c = stringToArraysOfInt(input);	
+        		if(c[0] == 0) processCommand(c);
+        		if(c[0] == 1) processOrder(c);
+        	}
+        	
+		} catch(IOException | InterruptedException e) { }
+		//finally { close(); }
 	}
 	
 	public boolean close() { 
 		try {
+			// TODO: tell the server to remove this client
+			System.out.print("im here");
+			mutex.release();
 			out.close();
 			in.close();
 			clientSocket.close();
-			interrupt();
 			return true;
 		} catch(IOException e) { return false; }
 	}
 	
-	@Override
-	public void run() {
-		try {
-			out = new PrintWriter(clientSocket.getOutputStream(), true); 
-        	in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        	
-        	while(!this.isInterrupted()) {
-        		String input = in.readLine();
-        		if(input == null) break;
-        		//execRobot(input);
-        	}
-		} catch(IOException e) { close(); }
-	}
-}
-
-
-
-
-
-
-
-
-/*
-
-public class Server {
-	//private ArrayList<RobotLegoSockets> clients;
-	private ArrayList<ClientHandler> clients;
-	private final String endpoint;
-	private final String token = "2256Ox3dCPN2e5i3NG279Ps82f2tFoY1";
-	ServerSocket server;
-	ObjectInputStream in;
-	ObjectOutputStream out;
-	
-	
-	public Server(String clientEndpoint) {
-		clients.add(new RobotLegoSockets());
-		endpoint = client.getEndpoint();
-		start();
+	public void shutdown() {
+		close();
+		isAlive = false;
+		interrupt();
 	}
 	
-	public Server(String endpoint) {
-		this.endpoint = endpoint;
-	}
-	
-	public void killClient(String host) {
-		for(int i = 0; i < clients.size(); i++) {
-			if(parseHost(clients.get(i).getEndpoint()).equals(host)) {
-				clients.remove(i);
-			}
+	private boolean processOrder(int[] order) throws InterruptedException {
+		// 1:direction:distance:radius:angle:offsetL:offsetR:
+		if (order.length == 0) return false;
+		if(order[0] != 1) return false;
+		
+		switch(order[1]) {
+		case 8:
+			robot.Reta(order[1]);
+			System.out.println("[x] Robot: Moving forward");
+			break;
+		case 2:
+			robot.Reta(-order[1]);
+			System.out.println("[x] Robot: Moving backwards");
+			break;
+		case 6:
+			robot.CurvarDireita(order[3], order[4]);
+			robot.AjustarVMD(order[6]);
+			System.out.println("[x] Robot: Turning left");
+			break;
+		case 4:
+			robot.CurvarEsquerda(order[3], order[4]);
+			robot.AjustarVME(order[5]);
+			System.out.println("[x] Robot: Turning right");
+			break;
+		case 5:
+			robot.Parar(true);
+			System.out.println("[x] Robot stop");
+			break;
+		case 7:
+			robot.AjustarVME(order[5]);
+			break;
+		case 9:
+			robot.AjustarVMD(order[6]);
+			break;
 		}
+		return true;
 	}
 	
-
+	private void sendCommand(String cmd) {
+		out.println(cmd);
+		out.flush();
+	}
 	
-	public static String parseHost(String endpoint) {
-		return endpoint.substring(0, endpoint.indexOf(":") - 1);
+	private boolean processCommand(int[] order) throws InterruptedException {
+		// 0:0: -- shutdown
+		// 0:1: -- close
+		// 0:2: -- start
+		// 0:3: -- ping
+		// 0:4: -- pong
+		// 0:5: -- kill
+		if (order.length == 0) return false;
+		if(order[0] != 0) return false;
 		
+		switch(order[1]) {
+		case 0:
+			shutdown();
+			break;
+		case 1:
+			close();
+			break;
+		case 2:
+			mutex.acquire();
+			sendCommand("0:2:");
+			break;
+		case 3:
+			System.out.println("Client: ping!");
+			sendCommand("0:4:");
+			// send pong
+			break;
+		
+		}
+		
+		return false;
 	}
 	
-	public String getHost() {
-		return parseHost(endpoint);
+	public static int[] stringToArraysOfInt(String order) {
+		String[] orders = order.split(":");
+		int[] intOrders = new int[orders.length];
+		
+		for(int i = 0; i < orders.length; i++) {
+			intOrders[i] = Integer.parseInt(orders[i]);
+		}
+		
+		return intOrders;
 	}
-	
-	public int getPort() {
-		return parsePort(endpoint);
-	}
-	
-	private void start() {
-		try {
-            ServerSocket serverSocket = new ServerSocket(parsePort(endpoint));
-            Socket clientSocket = serverSocket.accept();
-            ClientHandler client = new ClientHandler(clientSocket);
-            start();
-        } catch (IOException e) { }
-	}
-	
 }
-
-class ClientHandler extends Thread {
-	private final String host;
-	
-	public ClientHandler(Socket clientSocket) {
-		try {
-	        ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-	        ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
-	        Object o = in.readObject();
-		} catch(IOException | ClassNotFoundException e) { }
-	}
-	
-	@Override
-	public void run() {
-		
-	}
-	
-	public void start() {
-		
-	}
-	
-	public void close() {
-		
-	}
-	
-	public void sendMessage() { }
-	
-	public void receiveMessage() { }
-}
-
-
-*/

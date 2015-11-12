@@ -9,76 +9,88 @@ public class RobotLegoSockets extends MyRobotLego {
 	private Socket serverSocket;
     private PrintWriter out;
     private BufferedReader in;
+    private JTextField l;
+    private final String serverHostname = "127.0.0.1";
     
 	public RobotLegoSockets(JTextField l, boolean liveMode) {
 		super(l, liveMode);
+		this.l = l;
+		connect();
 	}
 	
-	public boolean start(String serverHostname) {
+	private void connect() {
 		try {
-			serverSocket = new Socket(serverHostname, 3366);
-            out = new PrintWriter(serverSocket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            return true;
-		} catch(IOException e) {
+			Thread.sleep(500);
+			serverSocket = new Socket(serverHostname, 7755);
+			out = new PrintWriter(serverSocket.getOutputStream(), true);
+	        in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+		} catch(IOException | InterruptedException e) {
+			new Server(l).start();
+			connect();
+		}	
+	}
+	
+	@Override
+	public boolean OpenNXT(String name) {
+		if(serverSocket.isClosed()) connect();
+		
+		try {
+	        sendCommand("0:2:");
+	        String input;
+	        
+			while((input = in.readLine()) == null) {
+				ClientHandler.stringToArraysOfInt(input);
+				Thread.sleep(1000);
+			}
+		} catch (IOException | InterruptedException e) {
 			return false;
 		}
-	}
-}
-
-/*
-public class RobotLegoSockets extends MyRobotLego {
-	private final String token = "2256Ox3dCPN2e5i3NG279Ps82f2tFoY1";
-	private final String endpoint = "127.0.0.1:6634";
-	private Server server;
-	
-	private Socket clientSocket = null;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
-    
-	public RobotLegoSockets(JTextField l, boolean liveMode) {
-		super(l, liveMode);
-		if(!start()) {
-			server = new Server(this);
-		}
+		
+		// TODO: 
+		// ask the server if he can use the robot
+		// server replies -- true:false
+		return true;
 	}
 	
-	public RobotLegoSockets(String endpoint) {
-		this.endpoint = endpoint;
-	}
-	
-	public String getEndpoint() {
-		return this.endpoint;
-	}
-	
-	public boolean start() {
+	@Override
+	public boolean CloseNXT() {
 		try {
-				clientSocket = new Socket(server.getHost(), server.getPort());
-	            out = new PrintWriter(clientSocket.getOutputStream(), true);
-	            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-				return true;
-		} 
-		catch(IOException e) { return false; }
-	}
-	
-	public void stop() {
-		try {
-			out.close();
+			sendCommand("0:1:");
 			in.close();
-			clientSocket.close();
-		} catch(IOException e) { }
+			out.close();
+			serverSocket.close();
+			super.CloseNXT();
+			return true;
+		} catch (Exception e) { return false; }
 	}
 	
-	private String receiveMessage() { 
-		try {
-			return in.readLine(); 
-		} catch(IOException e) { return null; }
+	public void shutdown() {
+		sendCommand("0:0:");
+		CloseNXT();
 	}
 	
-	private void sendMessage(String msg) { 
-		out.println(msg);
+	public void ping() {
 	}
 	
-	public boolean OpenNXT(String name) { sendMessage("OpenNXT()"); return true; }
+	private void sendCommand(String command) {
+		out.println(command);
+	}
+	// 1:direction:distance:radius:angle:offsetL:offsetR:
+	@Override
+	public void Reta(int units) { sendCommand("1:8:" + units + ":0:0:0:0:"); }
+	
+	@Override
+	public void CurvarDireita(int radius, int angle) { sendCommand("1:6:" + radius + ":" + angle + ":0:0:0:"); }
+	
+	@Override
+	public void CurvarEsquerda(int radius, int angle) { sendCommand("1:4:" + radius + ":" + angle + ":0:0:"); }
+	
+	@Override
+	public void AjustarVMD(int offset) { sendCommand("1:9:0:0:0:0:" + offset + ":"); }
+	
+	@Override
+	public void AjustarVME(int offset) { sendCommand("1:7:0:0:0:" + offset + ":0:"); }
+	
+	@Override
+	public void Parar(boolean trueStop) { sendCommand("1:5:0:0:0:0:"); }
 }
-*/

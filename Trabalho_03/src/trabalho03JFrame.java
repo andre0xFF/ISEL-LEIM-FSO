@@ -15,7 +15,7 @@ import memoryMapped.*;
 
 @SuppressWarnings("serial")
 public class trabalho03JFrame extends JFrame implements Runnable {
-
+	
 	//#region Properties
 	private JPanel contentPane;
 	private JTextField txtOffsetEsquerda;
@@ -48,7 +48,6 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 	MyRobotLego robot;
 	Server server;
 	private final int comMode = 1;
-	//#endregion
 	
 	/**
 	 * Initializes variables
@@ -63,32 +62,17 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		distance = 0;
 		debug = true;
 		onOff = false;
-		
-		if(comMode == 0) {
-			RobotLegoMemoryMapped robot = new RobotLegoMemoryMapped(txtLog, false);
-		} else {
-			robot = initServerClient(false);
+
+		switch(comMode) {
+		case 0:
+			robot = new RobotLegoMemoryMapped(txtLog, false);
+			break;
+		case 1:
+			robot = new RobotLegoSockets(txtLog, false);
+			break;
 		}
-	}
-	
-	private RobotLegoSockets initServerClient(boolean b) {
-		if(b) {
-			server = new Server(txtLog);
-		}
-		
-		RobotLegoSockets r = new RobotLegoSockets(txtLog, false);
-		
-		if(!r.start("127.0.0.1")) {
-			r = initServerClient(true);
-			r.start("127.0.0.1");
-		}
-		
-		return r;
 	}
 
-	/**
-	 * Updates GUI components
-	 */
 	void updateGuiComponents() {
 		txtOffsetDireita.setText(Integer.toString(offsetRight));
 		txtOffsetEsquerda.setText(Integer.toString(offsetLeft));
@@ -107,9 +91,6 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		btnParar.setEnabled(onOff);
 	}
 
-	/**
-	 * Launches the application
-	 */
 	public void run() {
 		//try {
 		//	trabalho01JFrame frame = new trabalho01JFrame();
@@ -127,9 +108,6 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		//});
 	}
 
-	/**
-	 * Create the frame
-	 */
 	public trabalho03JFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -340,7 +318,7 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				if(onOff) {
-					robot.CloseNXT();
+					robot.shutdown();
 				}
 			}
 		});
@@ -355,36 +333,6 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		updateGuiComponents();
 		log("On/Off: " + Boolean.toString(onOff));
 	}
-	
-	/**
-	 * Switches the robot on
-	 * @return True if connected successfully
-	 */
-	/*
-	protected Boolean robotOn() {
-		if(robot.OpenNXT(robotName)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	*/
-	
-	/**
-	 * Switches the robot off
-	 * @return True if disconnected successfully
-	 */
-	/*
-	protected Boolean robotOff() {
-		try {
-			robot.CloseNXT();
-			return true;
-		} catch(Exception e) { 
-			log("Erro!"); 
-			return false;
-		}
-	}
-	*/
 
 	int stringToInteger(String s) {
 		try {
@@ -404,11 +352,11 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 		txtLog.setText(v);
 	}
 	
-	void robotMove(int distance, int radius, int angle, int direction, int offsetL, int offsetR) {
+	public void robotMove(int distance, int radius, int angle, int direction, int offsetL, int offsetR) {
 		if (!onOff) {
 			return;
 		}
-		
+
 		switch(direction) {
 			case 8:
 				robot.Reta(distance);
