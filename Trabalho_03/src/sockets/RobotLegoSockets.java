@@ -6,91 +6,107 @@ import java.net.*;
 import robot.MyRobotLego;
 
 public class RobotLegoSockets extends MyRobotLego {
-	private Socket serverSocket;
-    private PrintWriter out;
-    private BufferedReader in;
-    private JTextField l;
-    private final String serverHostname = "127.0.0.1";
-    
+	Socket socket;
+	private final String serverHost = "127.0.0.1";
+	final String agentPath = "//home//andrew//Workspace//Server.jar";
+	private final int serverPort = 7755;
+	
 	public RobotLegoSockets(JTextField l, boolean liveMode) {
 		super(l, liveMode);
-		this.l = l;
-		connect();
-	}
-	
-	private void connect() {
-		try {
-			Thread.sleep(500);
-			serverSocket = new Socket(serverHostname, 7755);
-			out = new PrintWriter(serverSocket.getOutputStream(), true);
-	        in = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-		} catch(IOException | InterruptedException e) {
-			new Server(l).start();
-			connect();
-		}	
 	}
 	
 	@Override
 	public boolean OpenNXT(String name) {
-		if(serverSocket.isClosed()) connect();
+		if(!connect(serverHost, serverPort)) return false;
 		
-		try {
-	        sendCommand("0:2:");
-	        String input;
-	        
-			while((input = in.readLine()) == null) {
-				ClientHandler.stringToArraysOfInt(input);
+		int[] procedures;
+		
+		while((procedures = Agent.procedureBuilder((receive()))) == null) {
+			try {
 				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
-		} catch (IOException | InterruptedException e) {
-			return false;
 		}
 		
-		// TODO: 
-		// ask the server if he can use the robot
-		// server replies -- true:false
+		if(!connect(Integer.toString(procedures[1]), procedures[2])) return false;
+		
 		return true;
 	}
 	
-	@Override
-	public boolean CloseNXT() {
+	public boolean connect(String serverHost, int serverPort) {
 		try {
-			sendCommand("0:1:");
-			in.close();
-			out.close();
-			serverSocket.close();
-			super.CloseNXT();
+			socket = new Socket(serverHost, serverPort);
+			authenticate();
 			return true;
-		} catch (Exception e) { return false; }
+		} catch(IOException e) {
+			createServer();
+			connect(serverHost, serverPort);
+		}
+		
+		return false;
 	}
 	
-	public void shutdown() {
-		sendCommand("0:0:");
-		CloseNXT();
+	public void createServer() { 
+		try {
+			ProcessManager.runJavaProcess(agentPath, null);
+			Thread.sleep(500);
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}	
 	}
 	
-	public void ping() {
+	public void authenticate() { 
+		send(Client.token);
 	}
 	
-	private void sendCommand(String command) {
-		out.println(command);
+	@Override
+	public boolean CloseNXT() { 
+		shutdown();
+		return true;
 	}
+	
+	public void shutdown() { 
+		send("500:0:0:0:0:0:0");
+	}
+	
+	private void send(String msg) { 
+		PrintWriter out;
+		try {
+			out = new PrintWriter(socket.getOutputStream(), true);
+			out.println(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+	}
+	
+	private String receive() {
+		BufferedReader in;
+		try {
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			return in.readLine();
+		} catch (IOException e) {
+			return null;
+		}
+	}
+	
 	// 1:direction:distance:radius:angle:offsetL:offsetR:
 	@Override
-	public void Reta(int units) { sendCommand("1:8:" + units + ":0:0:0:0:"); }
+	public void Reta(int units) { send("300:8:" + units + ":0:0:0:0:"); }
 	
 	@Override
-	public void CurvarDireita(int radius, int angle) { sendCommand("1:6:" + radius + ":" + angle + ":0:0:0:"); }
+	public void CurvarDireita(int radius, int angle) { send("300:6:" + radius + ":" + angle + ":0:0:0"); }
 	
 	@Override
-	public void CurvarEsquerda(int radius, int angle) { sendCommand("1:4:" + radius + ":" + angle + ":0:0:"); }
+	public void CurvarEsquerda(int radius, int angle) { send("300:4:" + radius + ":" + angle + ":0:0:0"); }
 	
 	@Override
-	public void AjustarVMD(int offset) { sendCommand("1:9:0:0:0:0:" + offset + ":"); }
+	public void AjustarVMD(int offset) { send("300:9:0:0:0:" + offset + ":0"); }
 	
 	@Override
-	public void AjustarVME(int offset) { sendCommand("1:7:0:0:0:" + offset + ":0:"); }
+	public void AjustarVME(int offset) { send("300:7:0:0:0:" + offset+ ":0"); }
 	
 	@Override
-	public void Parar(boolean trueStop) { sendCommand("1:5:0:0:0:0:"); }
+	public void Parar(boolean trueStop) { send("300:5:0:0:0:0:0"); }
 }

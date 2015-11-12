@@ -9,8 +9,9 @@ import javax.swing.JButton;
 import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import robot.*;
-import sockets.*;
+import robot.MyRobotLego;
+import sockets.Server;
+import sockets.RobotLegoSockets;
 import memoryMapped.*;
 
 @SuppressWarnings("serial")
