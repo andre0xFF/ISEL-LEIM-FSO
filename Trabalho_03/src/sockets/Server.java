@@ -1,4 +1,5 @@
 package sockets;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -6,7 +7,6 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
 import robot.MyRobotLego;
 import sun.misc.Queue;
 
@@ -23,7 +23,6 @@ public class Server {
 		
 		System.out.println("Agent $ starting");
 		Agent manager = new Agent();
-		//manager.connect(manager.getIp(), manager.getPort());
 		
 		Queue<Client> clients = new Queue<>();
 		System.out.println("Server $ Ready!");
@@ -42,7 +41,6 @@ public class Server {
 				c.send(Integer.toString(Codes.AUTHENTICATED));
 				manager.toggle();
 				c.disconnect();
-				System.out.println("Agent $ I'm free");
 			}
 			
 			if(r == Client.ID) {
@@ -50,7 +48,7 @@ public class Server {
 				numberOfClients++;
 
 				clients.enqueue(c);
-				System.out.println("Client $ connected. Queue: " + numberOfClients);
+				System.out.println("Client $ connected. IP: " + c.getIp() + " Queue: " + numberOfClients);
 				
 				if(manager.agentIsBusy()) continue;
 			}
@@ -59,6 +57,10 @@ public class Server {
 				clients.dequeue().accept();	
 				manager.toggle();
 				numberOfClients--;
+			}
+			
+			if(r == Agent.ID) {
+				System.out.println("Client $ disconnected. Queue: " + numberOfClients);
 			}
 		}
 		
@@ -101,6 +103,10 @@ class Client {
 	
 	public void disconnect() throws IOException {
 		socket.close();
+	}
+	
+	public String getIp() {
+		return socket.getInetAddress().getHostAddress();
 	}
 }
 

@@ -3,7 +3,6 @@ package sockets;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-
 public abstract class AgentRunner implements Runnable {
 	static final int PORT = 7766;
 	
@@ -14,9 +13,7 @@ public abstract class AgentRunner implements Runnable {
 		
 		while(true) {	
 			if(!agent.toggleStatusOnServer()) continue;
-			System.out.println("Server $ I'm free");
-			
-			System.out.println("Agent $ waiting for new connections");
+
 			agent.connectWithClient(serverSocket.accept());
 			
 			{
