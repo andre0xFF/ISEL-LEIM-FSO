@@ -19,17 +19,19 @@ public class RobotLegoSockets extends MyRobotLego {
 	public boolean OpenNXT(String name) {
 		if(!connect(serverHost, serverPort)) return false;
 		
-		int[] procedures;
+		String[] procedures;
 		
 		while((procedures = Agent.procedureBuilder((receive()))) == null) {
+			/*
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			*/
 		}
 		
-		if(!connect(Integer.toString(procedures[1]), procedures[2])) return false;
+		if(!connect(procedures[1], Integer.parseInt(procedures[2]))) return false;
 		
 		return true;
 	}
@@ -49,7 +51,7 @@ public class RobotLegoSockets extends MyRobotLego {
 	
 	public void createServer() { 
 		try {
-			ProcessManager.runJavaProcess(agentPath, null);
+			AgentManager.runJavaProcess(agentPath, null);
 			Thread.sleep(500);
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
