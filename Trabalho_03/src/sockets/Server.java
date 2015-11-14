@@ -92,7 +92,7 @@ class Client {
 		
 		if(Agent.TOKEN.equals(token)) return Agent.ID;
 		
-		return 0;
+		return 0;Quando robot deteta um objeto atrás de si a apr
 	}
 	
 	public void accept() throws IOException {
