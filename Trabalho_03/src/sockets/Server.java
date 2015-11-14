@@ -16,6 +16,7 @@ public class Server {
 
 	public static void main(String[] args) throws IOException, InterruptedException {			
 		boolean run = true;
+		int numberOfClients = 0;
 		
 		System.out.println("Server $ starting");
 		ServerSocket serverSocket = new ServerSocket(Server.PORT);
@@ -25,35 +26,42 @@ public class Server {
 		//manager.connect(manager.getIp(), manager.getPort());
 		
 		Queue<Client> clients = new Queue<>();
+		System.out.println("Server $ Ready!");
 		
 		while(run) {
-			System.out.println("Server $ waiting for new connections");
 			Client c = new Client(serverSocket.accept());
 			
-			{
+			{ // Authentication process
 				int r = Client.authenticate(c.receive());
 				
-				if(r == Agent.ID) { 
+				if(r != Agent.ID && r != Client.ID) {
+					c.send(Integer.toString(Codes.UNAUTHORIZED));
+					continue;
+				}
+				
+				if(r == Agent.ID) {
+					c.send(Integer.toString(Codes.AUTHENTICATED));
 					manager.toggle();
 					c.disconnect();
 					System.out.println("Agent $ I'm free");
 					continue;
 				}
 				
-				if(r == Client.ID) { 
-					manager.toggle();
-					System.out.println("Agent $ busy");
+				if(r == Client.ID) {
+					c.send(Integer.toString(Codes.AUTHENTICATED));
+					numberOfClients++;
 				}
-				
-				if(r == 0) continue;
+		
 			}
 			
 			clients.enqueue(c);
-			System.out.println("Client $ connected");
+			System.out.println("Client $ connected. Queue: " + numberOfClients);
 			
 			if(manager.agentIsBusy()) continue;
 			
-			clients.dequeue().accept(manager.getIp(), manager.getPort());		
+			clients.dequeue().accept();	
+			manager.toggle();
+			numberOfClients--;
 		}
 		
 		serverSocket.close();
@@ -80,17 +88,16 @@ class Client {
 	}
 	
 	public static int authenticate(String token) throws IOException {		
-		if(Client.TOKEN.equals(token))
-			return ID;
+		if(Client.TOKEN.equals(token)) return Client.ID;
 		
-		if(Agent.TOKEN.equals(token))
-			return Agent.ID;
+		if(Agent.TOKEN.equals(token)) return Agent.ID;
 		
 		return 0;
 	}
 	
-	public void accept(String agentIp, int agentPort) throws IOException {
-		send("200:" + agentIp.toString() + ":" + Integer.toString(agentPort) + ":");
+	public void accept() throws IOException {
+		//send("200:" + agentIp.toString() + ":" + Integer.toString(agentPort) + ":");
+		send(Integer.toString(Codes.ACCEPTED));
 		socket.close();
 	}
 	
@@ -101,18 +108,14 @@ class Client {
 
 class Agent {
 	private final String PATH = "//home//andrew//Workspace//Agent.jar";
-	private final String IP = "127.0.0.1";
-	private final int PORT = 7766;
+	public final static String IP = "127.0.0.1";
+	public final static int PORT = 7766;
 	public final static String TOKEN = "H98QQ185t5q4YAlq8MYxB571PKg6dJSi";
-	public final static int ID = 2;
+	public final static int ID = 1;
 	private Socket socket;
-	private boolean busy = false;
+	private boolean busy = true;
 	private Process p;
 	private MyRobotLego robot;
-	
-	public int getPort() { return this.PORT; }
-	
-	public String getIp() { return this.IP; }
 	
 	public void toggle() { this.busy = !this.busy; }
 	
@@ -125,21 +128,17 @@ class Agent {
 	public static Process runJavaProcess(String path, String params) throws IOException {
 		return Runtime.getRuntime().exec("java -jar " + path + " " + params);
 	}
-	
-	public void connect(String ip, int port) throws IOException {
-		try { socket = new Socket(ip, port); }
-		catch(IOException e) {
-			start();
-			connect(ip, port);
-		}
-		finally { socket.close(); }
-	}
-	
-	public void connectWithServer() throws UnknownHostException, IOException {
+
+	public boolean toggleStatusOnServer() throws UnknownHostException, IOException {
 		socket = new Socket(Server.IP, Server.PORT);
-		PrintWriter out = new PrintWriter(socket.getOutputStream(), true); 
-		out.println(Agent.TOKEN);
+		
+		send(Agent.TOKEN);
+		
+		if(Integer.parseInt(receive()) != Codes.AUTHENTICATED) return false;
+		
 		socket.close();
+		
+		return true;
 	}
 	
 	public void connectWithRobot() { 
@@ -147,7 +146,7 @@ class Agent {
 		robot.OpenNXT("Amelia");
 	}
 	
-	public void disconnectWithRobot() {
+	public void disconnectFromRobot() {
 		robot.CloseNXT();
 	}
 	
@@ -155,64 +154,57 @@ class Agent {
 		this.socket = socket;
 	}
 	
-	public void disconnectWithClient() throws IOException {
+	public void disconnectFromClient() throws IOException {
 		socket.close();
+	}
+	
+	public void send(String msg) throws IOException {
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true); 
+		out.println(msg);
 	}
 	
 	public String receive() throws IOException {
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		return in.readLine();
 	}
-	
-	public int[] receiveOrder() throws IOException {
-		String[] r1 = receive().split(":");
-		int[] r2 = new int[r1.length];
-		
-		for(int i = 0; i < r1.length; i++) {
-			r2[i] = Integer.parseInt(r1[i]);
-		}
-		
-		return r2;
-	}
-	
+
 	public void robot(int[] procedures) {
 		if(procedures.length < 2) return;
 		
 		// 300:direction:distance:radius:angle:offsetL:offsetR:
+		if(procedures[2] < 0) procedures[1] = Codes.ROBOT_BACKWARDS;
+		
 		switch(procedures[1]) {
-		case 8:
+		case Codes.ROBOT_FORWARD:
 			robot.Reta(procedures[2]);
 			System.out.println("Robot $ Moving forward");
 			break;
-		case 2:
+		case Codes.ROBOT_BACKWARDS:
 			robot.Reta(-procedures[2]);
 			System.out.println("Robot $ Moving backwards");
 			break;
-		case 4:
+		case Codes.ROBOT_LEFT:
 			robot.CurvarDireita(procedures[3], procedures[4]);
 			//robot.AjustarVMD(procedures[6]);
 			System.out.println("Robot $ Turning left");
 			break;
-		case 6:
+		case Codes.ROBOT_RIGHT:
 			robot.CurvarDireita(procedures[3], procedures[4]);
 			//robot.AjustarVMD(procedures[6]);
 			System.out.println("Robot $ Turning right");
 			break;
-		case 5:
+		case Codes.ROBOT_STOP:
 			robot.Parar(true);
 			System.out.println("Robot $ Idling");
 			break;
-		case 7:
+		case Codes.ROBOT_OFFSET_L:
 			robot.AjustarVME(procedures[5]);
 			break;
-		case 9:
+		case Codes.ROBOT_OFFSET_R:
 			robot.AjustarVMD(procedures[6]);
 			break;
 		}
 	}
-	
-
-	
 	
 	//public boolean isRunning() {
 		// TODO: connect to agent and see if he is alive
@@ -236,5 +228,42 @@ class Agent {
 	
 	public void killAgent() {
 		//Runtime.getRuntime().exec("kill " PID);
+	}
+}
+
+class Codes {
+	public final static int ROBOT_ORDER = 300;
+	public final static int ROBOT_FORWARD = 8;
+	public final static int ROBOT_BACKWARDS = 2;
+	public final static int ROBOT_LEFT = 4;
+	public final static int ROBOT_RIGHT = 6;
+	public final static int ROBOT_STOP = 5;
+	public final static int ROBOT_OFFSET_L = 7;
+	public final static int ROBOT_OFFSET_R = 9;
+	public final static int AUTHENTICATED = 200;
+	public final static int ACCEPTED = 202;
+	public final static int UNAUTHORIZED = 401;
+	public final static int DISCONNECT = 500;
+	public final static String REGEX = ":";
+	
+	// 300:direction:distance:radius:angle:offsetL:offsetR:
+	public static String intToString(int direction, int distance, int radius, int angle, int offsetL, int offsetR) {
+		return Integer.toString(Codes.ROBOT_ORDER)
+				+ Integer.toString(distance) + Codes.REGEX 
+				+ Integer.toString(radius) + Codes.REGEX
+				+ Integer.toString(angle) + Codes.REGEX
+				+ Integer.toString(offsetL) + Codes.REGEX
+				+ Integer.toString(offsetR) + Codes.REGEX;
+	}
+	
+	public static int[] stringToInt(String orders) {
+		String[] r1 = orders.split(Codes.REGEX);
+		int[] r2 = new int[r1.length];
+		
+		for(int i = 0; i < r1.length; i++) {
+			r2[i] = Integer.parseInt(r1[i]);
+		}
+		
+		return r2;
 	}
 }

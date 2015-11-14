@@ -7,35 +7,58 @@ import robot.MyRobotLego;
 
 public class RobotLegoSockets extends MyRobotLego {
 	Socket socket;
-	private final String serverHost = "127.0.0.1";
-	final String agentPath = "//home//andrew//Workspace//Server.jar";
-	private final int serverPort = 7755;
 	
 	public RobotLegoSockets(JTextField l, boolean liveMode) {
 		super(l, liveMode);
 	}
 	
-	@Override
-	public boolean OpenNXT(String name) {
-		if(!connect(serverHost, serverPort)) return false;
+	public void send(String msg) throws IOException {
+		PrintWriter out = new PrintWriter(socket.getOutputStream(), true); 
+		out.println(msg);
+	}
+	
+	public String receive() throws IOException {
+		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		return in.readLine();
+	}
+	
+	public boolean connect() throws UnknownHostException, IOException { 
+		socket = new Socket(Server.IP, Server.PORT);
+		send(Client.TOKEN);
 		
-		String[] procedures;
+		if(Integer.parseInt(receive()) != Codes.AUTHENTICATED) return false;
 		
-		while((procedures = Agent.procedureBuilder((receive()))) == null) {
-			/*
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			*/
+		String r;
+		while((r = receive()) != null) { 
+			if(Integer.parseInt(r) != Codes.ACCEPTED) return false;
 		}
 		
-		if(!connect(procedures[1], Integer.parseInt(procedures[2]))) return false;
+		disconnect();
 		
+		socket = new Socket(Agent.IP, Agent.PORT);
+		send(Client.TOKEN);
+				
 		return true;
 	}
 	
+	public void disconnect() throws IOException {
+		send(Integer.toString(Codes.DISCONNECT));
+		socket.close();
+	}
+	
+	@Override
+	public boolean OpenNXT(String name) {
+		try {
+			if(!connect()) return false;
+			
+			return true;
+		} catch (IOException e) {
+			return false;
+		}		
+		//while((procedures = Agent.procedureBuilder((receive()))) == null) {
+		//}		
+	}
+	/*
 	public boolean connect(String serverHost, int serverPort) {
 		try {
 			socket = new Socket(serverHost, serverPort);
@@ -57,21 +80,19 @@ public class RobotLegoSockets extends MyRobotLego {
 			e.printStackTrace();
 		}	
 	}
-	
-	public void authenticate() { 
-		send(Client.token);
-	}
+	*/
 	
 	@Override
 	public boolean CloseNXT() { 
-		shutdown();
-		return true;
+		try {
+			send(Integer.toString(Codes.DISCONNECT));
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
 	}
 	
-	public void shutdown() { 
-		send("500:0:0:0:0:0:0");
-	}
-	
+	/*
 	private void send(String msg) { 
 		PrintWriter out;
 		try {
@@ -92,23 +113,111 @@ public class RobotLegoSockets extends MyRobotLego {
 			return null;
 		}
 	}
-	
+	*/
+
 	// 1:direction:distance:radius:angle:offsetL:offsetR:
 	@Override
-	public void Reta(int units) { send("300:8:" + units + ":0:0:0:0:"); }
+	public void Reta(int units) { 
+		//send("300:8:" + units + ":0:0:0:0:");
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_FORWARD + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
-	public void CurvarDireita(int radius, int angle) { send("300:6:" + radius + ":" + angle + ":0:0:0"); }
+	public void CurvarDireita(int radius, int angle) { 
+		//send("300:6:" + radius + ":" + angle + ":0:0:0");
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_RIGHT + Codes.REGEX
+					+ radius + Codes.REGEX
+					+ angle + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
-	public void CurvarEsquerda(int radius, int angle) { send("300:4:" + radius + ":" + angle + ":0:0:0"); }
+	public void CurvarEsquerda(int radius, int angle) { 
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_LEFT + Codes.REGEX
+					+ radius + Codes.REGEX
+					+ angle + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
 	
 	@Override
-	public void AjustarVMD(int offset) { send("300:9:0:0:0:" + offset + ":0"); }
+	public void AjustarVMD(int offset) { 
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_OFFSET_L + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ offset + Codes.REGEX
+					+ "0" + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
 	
 	@Override
-	public void AjustarVME(int offset) { send("300:7:0:0:0:" + offset+ ":0"); }
+	public void AjustarVME(int offset) { 
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_OFFSET_R + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ offset + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
 	
 	@Override
-	public void Parar(boolean trueStop) { send("300:5:0:0:0:0:0"); }
+	public void Parar(boolean trueStop) { 
+		try {
+			send(
+					Codes.ROBOT_ORDER + Codes.REGEX
+					+ Codes.ROBOT_STOP + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					+ "0" + Codes.REGEX
+					);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

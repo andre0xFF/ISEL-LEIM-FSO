@@ -10,7 +10,6 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import robot.MyRobotLego;
-import sockets.Server;
 import sockets.RobotLegoSockets;
 import memoryMapped.*;
 
@@ -46,14 +45,12 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 	private int angle;
 	private boolean onOff;
 	private boolean debug;
-	MyRobotLego robot;
-	Server server;
+	private MyRobotLego robot;
 	private final int comMode = 1;
 	
 	/**
 	 * Initializes variables
 	 */
-	@SuppressWarnings("unused")
 	void initVariables() {
 		robotName = "Desenha1";
 		offsetLeft = 0;
@@ -319,7 +316,7 @@ public class trabalho03JFrame extends JFrame implements Runnable {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				if(onOff) {
-					robot.shutdown();
+					robot.CloseNXT();
 				}
 			}
 		});
