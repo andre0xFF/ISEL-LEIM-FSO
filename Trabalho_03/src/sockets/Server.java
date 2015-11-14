@@ -31,37 +31,35 @@ public class Server {
 		while(run) {
 			Client c = new Client(serverSocket.accept());
 			
-			{ // Authentication process
-				int r = Client.authenticate(c.receive());
-				
-				if(r != Agent.ID && r != Client.ID) {
-					c.send(Integer.toString(Codes.UNAUTHORIZED));
-					continue;
-				}
-				
-				if(r == Agent.ID) {
-					c.send(Integer.toString(Codes.AUTHENTICATED));
-					manager.toggle();
-					c.disconnect();
-					System.out.println("Agent $ I'm free");
-					continue;
-				}
-				
-				if(r == Client.ID) {
-					c.send(Integer.toString(Codes.AUTHENTICATED));
-					numberOfClients++;
-				}
-		
+			int r = Client.authenticate(c.receive());
+			
+			if(r != Agent.ID && r != Client.ID) {
+				c.send(Integer.toString(Codes.UNAUTHORIZED));
+				continue;
 			}
 			
-			clients.enqueue(c);
-			System.out.println("Client $ connected. Queue: " + numberOfClients);
+			if(r == Agent.ID) {
+				c.send(Integer.toString(Codes.AUTHENTICATED));
+				manager.toggle();
+				c.disconnect();
+				System.out.println("Agent $ I'm free");
+			}
 			
-			if(manager.agentIsBusy()) continue;
+			if(r == Client.ID) {
+				c.send(Integer.toString(Codes.AUTHENTICATED));
+				numberOfClients++;
+
+				clients.enqueue(c);
+				System.out.println("Client $ connected. Queue: " + numberOfClients);
+				
+				if(manager.agentIsBusy()) continue;
+			}
 			
-			clients.dequeue().accept();	
-			manager.toggle();
-			numberOfClients--;
+			if(numberOfClients > 0) {
+				clients.dequeue().accept();	
+				manager.toggle();
+				numberOfClients--;
+			}
 		}
 		
 		serverSocket.close();
