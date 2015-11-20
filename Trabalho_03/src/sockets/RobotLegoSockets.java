@@ -123,7 +123,7 @@ public class RobotLegoSockets extends MyRobotLego {
 			send(
 					Codes.ROBOT_ORDER + Codes.REGEX
 					+ Codes.ROBOT_FORWARD + Codes.REGEX
-					+ "0" + Codes.REGEX
+					+ units + Codes.REGEX
 					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
@@ -141,9 +141,9 @@ public class RobotLegoSockets extends MyRobotLego {
 			send(
 					Codes.ROBOT_ORDER + Codes.REGEX
 					+ Codes.ROBOT_RIGHT + Codes.REGEX
+					+ "0" + Codes.REGEX
 					+ radius + Codes.REGEX
 					+ angle + Codes.REGEX
-					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
 					);
@@ -158,9 +158,9 @@ public class RobotLegoSockets extends MyRobotLego {
 			send(
 					Codes.ROBOT_ORDER + Codes.REGEX
 					+ Codes.ROBOT_LEFT + Codes.REGEX
+					+ "0" + Codes.REGEX
 					+ radius + Codes.REGEX
 					+ angle + Codes.REGEX
-					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
 					+ "0" + Codes.REGEX
 					);

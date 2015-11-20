@@ -14,7 +14,11 @@ public class RobotLegoMemoryMapped extends MyRobotLego {
 	
 	public boolean OpenNXT(String name) {
 		try {
-			mutex.acquire();
+			try {
+				mutex.acquire();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			super.OpenNXT(name);
 			return true;
 		}

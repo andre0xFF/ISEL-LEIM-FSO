@@ -7,12 +7,12 @@ public class MutexCOM extends ProcessCOM {
 		// initialize mutex in memory
 		
 		// memory reset
-		//super.sendMessage("");
+		super.sendMessage("");
 		if(super.receiveMessage().equals("")) {
 			release();
 		}
 	}
-	
+	/*
 	public boolean acquire() throws MutexNotFound {
 		String str = super.receiveMessage();
 		
@@ -22,6 +22,20 @@ public class MutexCOM extends ProcessCOM {
 		
 		super.sendMessage("notHere");
 		
+		return true;
+	}
+	*/
+	
+	public boolean acquire() throws MutexNotFound, InterruptedException {
+		String str = super.receiveMessage();
+		
+		while(!str.contains(mutexName)) {
+			Thread.sleep(1000);
+			str = super.receiveMessage();
+			continue;
+		}
+		
+		super.sendMessage("notHere");
 		return true;
 	}
 	

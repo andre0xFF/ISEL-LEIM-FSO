@@ -146,8 +146,8 @@ class Agent {
 	}
 	
 	public void connectWithRobot() { 
-		robot = new MyRobotLego(new javax.swing.JTextField(), false);
-		robot.OpenNXT("Amelia");
+		robot = new MyRobotLego(new javax.swing.JTextField(), true);
+		robot.OpenNXT("Guia2");
 	}
 	
 	public void disconnectFromRobot() {
@@ -184,11 +184,11 @@ class Agent {
 			System.out.println("Robot $ Moving forward");
 			break;
 		case Codes.ROBOT_BACKWARDS:
-			robot.Reta(-procedures[2]);
+			robot.Reta(procedures[2]);
 			System.out.println("Robot $ Moving backwards");
 			break;
 		case Codes.ROBOT_LEFT:
-			robot.CurvarDireita(procedures[3], procedures[4]);
+			robot.CurvarEsquerda(procedures[3], procedures[4]);
 			//robot.AjustarVMD(procedures[6]);
 			System.out.println("Robot $ Turning left");
 			break;
@@ -208,6 +208,8 @@ class Agent {
 			robot.AjustarVMD(procedures[6]);
 			break;
 		}
+		
+		robot.Parar(false);
 	}
 	
 	//public boolean isRunning() {
