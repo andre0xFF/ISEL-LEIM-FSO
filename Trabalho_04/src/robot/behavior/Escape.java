@@ -1,43 +1,61 @@
-public class Escape extends Thread {
-  private RobotLego robot;
-  private Boolean alive;
+package robot.behavior;
+import RobotLego.RobotLego;
 
-  private Boolean scanner;
-  private Boolean reactor;
+public class Escape extends Thread {
+  private Boolean alive;
+  private RobotLego robot;
+
+  public static Boolean SCANNER;
+  public static Boolean REACTOR;
 
   public Escape(RobotLego robot) {
+    this.alive = true;
     this.robot = robot;
-    this.scanner = true;
-    this.reactor = true;
-    start();
+    Escape.SCANNER = true;
+    Escape.REACTOR = true;
+    this.start();
   }
 
-  public Boolean getReactor() { return this.reactor; }
-  public Boolean getScanner() { return this.scanner; }
-  public Boolean setReactor(Boolean reactor) { this.reactor = reactor; }
-  public Boolean setScanner(Boolean scanner) { this.scanner = scanner; }
+  public Boolean getAlive() { return this.alive; }
+  public void setAlive(Boolean alive) { this.alive = alive; }
 
   public void run() {
-    while() {
+	  while(alive) {
+		  System.out.println("I'm alive");
+		  scan();
 
-    }
+		  try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	  }
+	  
+	  this.interrupt();
   }
 
-  @Override
-  public void start() { super(); this.alive = true; }
-  public void stop() { this.alive = false; }
-
+  /**
+   * Use the scanner to determine if there's an object behind
+   * @return
+   */
   public boolean scan() {
-    if(!scanner) return false;
+    if(!Escape.SCANNER) return false;
+    
+    // Read the sensor: robot.SensorUS()
+    // Call react if there's an object behind
 
-    int r = robot.SensorUS(MyRobotLego.SENSOR_BACK);
-    if(r > 0) react(r);
+    return false;
   }
 
-  public void react() {
-    if(!reactor) return false;
+  /**
+   * React to the proximity of an object
+   * @param r How close the object is [0..250?]
+   */
+  public void react(int r) {
+    if(!REACTOR) return;
 
-    // take control of the robot
-
+    // Take control of the robot
+    // Make the robot move. Speed is relative to the distance of the object detected
   }
 }

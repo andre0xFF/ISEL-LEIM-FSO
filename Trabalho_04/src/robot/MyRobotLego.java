@@ -71,17 +71,17 @@ public class MyRobotLego {
 	public void shutdown() { CloseNXT(); }
 
 	public void escape(Boolean start) {
-		memory.setMODE_ESCAPE = start;
+		//memory.setMODE_ESCAPE = start;
 		// TODO: Start/stop run thread
 	}
 
 	public void avoid(Boolean start) {
-		memory.setMODE_AVOID = start;
+		//memory.setMODE_AVOID = start;
 		// TODO: Start/stop avoid obstacles thread
 	}
 
 	public void roam(Boolean start) {
-		memory.setMODE_ROAM = start;
+		//memory.setMODE_ROAM = start;
 		// TODO: Start/stop roaming thread
 		// TODO: Disable gui commands
 	}
