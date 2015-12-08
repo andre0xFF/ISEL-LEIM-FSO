@@ -2,6 +2,7 @@ package robot.behavior;
 import robot.MyRobotLego;
 
 public class Escape extends Thread {
+
   private Boolean alive;
   
   private MyRobotLego robot;
@@ -15,7 +16,7 @@ public class Escape extends Thread {
   private final static int MIN_SPEED = 30;
   private final static int MAX_SPEED = 100;
   private final static int SCANNER_DELAY= 500;
-  private final static int PORT = MyRobotLego.S_1;
+  private final static int PORT = RobotLego.RobotLego.S_1;
   
   public Escape(MyRobotLego robot, int minDistance, int maxDistance) {
     this.alive = true;
@@ -29,21 +30,24 @@ public class Escape extends Thread {
 
   public Boolean getAlive() { return this.alive; }
   public Boolean getActive() { return (Escape.SCANNER && Escape.REACTOR); }
+  public int getMinDistance() { return this.minDistance; }
+  public int getMaxDistance() { return this.maxDistance; }
   
   public void setAlive(Boolean alive) { this.alive = alive; }
+  public void setMinDistance(int distance) { this.minDistance = distance; }
+  public void setMaxDistance(int distance) { this.maxDistance = distance; }
   public void setActive(Boolean active) { 
-	  Escape.SCANNER = active;
-	  Escape.REACTOR = active;
+	Escape.SCANNER = active;
+	Escape.REACTOR = active;
   }
 
   public void run() {
-	  while(alive) {	  
-		  if(Escape.SCANNER && Escape.REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);
-		  
-		  sleepForAWhile(SCANNER_DELAY);
+	while(alive) {	  
+	  if(Escape.SCANNER && Escape.REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
+	    sleepForAWhile(SCANNER_DELAY);
 	  }
 	  
-	  this.interrupt();
+	this.interrupt();
   }
 
   /**
@@ -51,18 +55,21 @@ public class Escape extends Thread {
    * @return How far the object is related to the robot [0..255]
    */
   private int scan() {
-	  // TODO: If there is no object behind what value this returns?
+	// TODO: If there is no object behind what value this returns?
+	robot.SetSensorLowspeed(Escape.PORT);
     return robot.SensorUS(Escape.PORT);
   }
 
   /**
    * React to the proximity of an object
-   * @param distance How close the object is related to the minimum distance
+   * @param distance Object distance
+   * @param minSpeed Minimum robot speed
+   * @param maxSpeed Maximum robot speed
+   * @param minDistance Safe zone minimum distance
+   * @param maxDistance Safe zone maximum allowed distance
    */
   public void react(int distance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {
     if(objDistance < minDistance || objDistance > maxDistance) return;
-    
-    robot.SetSensorLowspeed(Escape.PORT);
     
     int relDistance = distance - minDistance;
     
@@ -76,20 +83,20 @@ public class Escape extends Thread {
   }
   
   protected void simulateReact(int objDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {
-	    if(objDistance < minDistance || objDistance > maxDistance) return;
-	    
-	    int relDistance = objDistance - minDistance;
-	    
-	    int speed = maxSpeed - (relDistance * 100 / maxDistance);
-	    
-	    if(speed < minSpeed) speed += minSpeed - speed;
-	    
-	    System.out.printf("Speed: %d\n", speed);
-	    System.out.printf("Moving forward: %d\n", maxDistance - objDistance);
+    if(objDistance < minDistance || objDistance > maxDistance) return;
+    
+    int relDistance = objDistance - minDistance;
+    
+    int speed = maxSpeed - (relDistance * 100 / maxDistance);
+    
+    if(speed < minSpeed) speed += minSpeed - speed;
+    
+    System.out.printf("Speed: %d\n", speed);
+    System.out.printf("Moving forward: %d\n", maxDistance - objDistance);
   }
   
   private void sleepForAWhile(int ms) {	  
-	  try {
+	try {
 		Thread.sleep(ms);
 	} catch (InterruptedException e) {
 		e.printStackTrace();

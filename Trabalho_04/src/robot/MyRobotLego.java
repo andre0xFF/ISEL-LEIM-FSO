@@ -2,67 +2,62 @@ package robot;
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
 
-public class MyRobotLego extends RobotLego {
+public class MyRobotLego {
 	private JTextField l;
 	private boolean liveMode;
-//	private RobotLego robot;
+	private RobotLego robot;
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
 		this.liveMode = liveMode;
 
-//		if(liveMode) robot = new RobotLego();
-	}
-
-	public boolean OpenNXT(String name, String hostname) {
-		return OpenNXT(name);
+		if(liveMode) robot = new RobotLego();
 	}
 
 	public boolean OpenNXT(String name) {
 		l.setText("Connection is open");
 
-		if (liveMode) this.OpenNXT(name);
+		if (liveMode) robot.OpenNXT(name);
 
 		return true;
 	}
 
-	@Override
 	public void CloseNXT() {
 		l.setText("Connection is closed");
 
-		if (liveMode) this.CloseNXT();
+		if (liveMode) robot.CloseNXT();
 	}
 
 	public void Reta(int units) {
-			l.setText("Moving forward " + units + " units");
+		l.setText("Moving forward " + units + " units");
 
-			if (liveMode) this.Reta(units);
+		if (liveMode) robot.Reta(units);
 	}
 
 	public void CurvarDireita(int radius, int angle) {
 		l.setText("Turning left " + radius + " radius " + angle + " angle");
 
-		if (liveMode) this.CurvarDireita(radius, angle);
+		if (liveMode) robot.CurvarDireita(radius, angle);
 	}
 
 	public void CurvarEsquerda(int radius, int angle) {
 		l.setText("Turning right " + radius + " radius " + angle + " angle");
 
-		if (liveMode) this.CurvarEsquerda(radius, angle);
+		if (liveMode) robot.CurvarEsquerda(radius, angle);
 	}
 
 	public void AjustarVMD(int offset) {
-		if (liveMode) this.AjustarVMD(offset);
+		if (liveMode) robot.AjustarVMD(offset);
 	}
 
 	public void AjustarVME(int offset) {
-		if (liveMode) this.AjustarVME(offset);
+		if (liveMode) robot.AjustarVME(offset);
 	}
 
 	public void Parar(boolean trueStop) {
 		l.setText("Robot stop");
 
-		if (liveMode) this.Parar(trueStop);
+		if (liveMode) robot.Parar(trueStop);
 	}
 
 	public void shutdown() { CloseNXT(); }
@@ -81,5 +76,29 @@ public class MyRobotLego extends RobotLego {
 		//memory.setMODE_ROAM = start;
 		// TODO: Start/stop roaming thread
 		// TODO: Disable gui commands
+	}
+	
+	public void SetSpeed(int speed) {
+		if (liveMode) robot.SetSpeed(speed);
+	}
+	
+	public void SetSensorLowspeed(int port) {
+		if (liveMode) robot.SetSensorLowspeed(port);
+	}
+	
+	public int SensorUS(int port) {
+		if (liveMode) return robot.SensorUS(port);
+		
+		return 0;
+	}
+	
+	public void SetSensorTouch(int port) {
+		if (liveMode) robot.SetSensorTouch(port);
+	}
+	
+	public int Sensor(int port) {
+		if (liveMode) return robot.Sensor(port);
+		
+		return 0;
 	}
 }
