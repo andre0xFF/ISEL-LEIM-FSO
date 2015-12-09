@@ -5,6 +5,9 @@ public class Escape extends Thread {
 
   private Boolean alive;
   
+  private static boolean active = true;
+  public void setActivee(boolean escape) { this.active = escape; }
+  
   private MyRobotLego robot;
   private int minDistance;
   private int maxDistance;
@@ -42,12 +45,24 @@ public class Escape extends Thread {
   }
 
   public void run() {
-	while(alive) {	  
-	  if(Escape.SCANNER && Escape.REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
-	    sleepForAWhile(SCANNER_DELAY);
-	  }
-	  
-	this.interrupt();
+	for(int j = 0; j < 20; j++) {
+		System.out.println(active);
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	return;
+	
+//	while(alive) {	  
+//	  if(Escape.SCANNER && Escape.REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
+//	    sleepForAWhile(SCANNER_DELAY);
+//	  }
+//	  
+//	this.interrupt();
   }
 
   /**
@@ -82,7 +97,7 @@ public class Escape extends Thread {
     robot.Reta(maxDistance - objDistance);
   }
   
-  protected void simulateReact(int objDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {
+  protected void simulateReact(int objDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) throws InterruptedException {		
     if(objDistance < minDistance || objDistance > maxDistance) return;
     
     int relDistance = objDistance - minDistance;
