@@ -1,68 +1,51 @@
 package robot.behavior;
 import robot.MyRobotLego;
 
-public class Escape extends Thread {
-
-  private Boolean alive;
-  
-  private static boolean active = true;
-  public void setActivee(boolean escape) { this.active = escape; }
-  
+public class Escape extends Thread {  
   private MyRobotLego robot;
   private int minDistance;
   private int maxDistance;
   private int objDistance;
 
-  public static Boolean SCANNER;
-  public static Boolean REACTOR;
+  public static boolean ALIVE;
+  public static boolean SCANNER;
+  public static boolean REACTOR;
   
   private final static int MIN_SPEED = 30;
   private final static int MAX_SPEED = 100;
-  private final static int SCANNER_DELAY= 500;
+  private final static int SCANNER_DELAY = 500;
   private final static int PORT = RobotLego.RobotLego.S_1;
   
   public Escape(MyRobotLego robot, int minDistance, int maxDistance) {
-    this.alive = true;
-    this.robot = robot;
-    Escape.SCANNER = true;
-    Escape.REACTOR = true;
+	this.robot = robot;
     this.minDistance = minDistance;
     this.maxDistance = maxDistance;
+	Escape.ALIVE = true;
+    Escape.SCANNER = true;
+    Escape.REACTOR = true;
     this.start();
   }
 
-  public Boolean getAlive() { return this.alive; }
-  public Boolean getActive() { return (Escape.SCANNER && Escape.REACTOR); }
-  public int getMinDistance() { return this.minDistance; }
-  public int getMaxDistance() { return this.maxDistance; }
-  
-  public void setAlive(Boolean alive) { this.alive = alive; }
-  public void setMinDistance(int distance) { this.minDistance = distance; }
-  public void setMaxDistance(int distance) { this.maxDistance = distance; }
-  public void setActive(Boolean active) { 
-	Escape.SCANNER = active;
-	Escape.REACTOR = active;
-  }
-
-  public void run() {
-	for(int j = 0; j < 20; j++) {
-		System.out.println(active);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//  public void run() {
+//	for(int j = 0; j < 20; j++) {
+//		System.out.println("Escape: " + Escape.ALIVE);
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+//	
+//	return;
 	
-	return;
-	
-//	while(alive) {	  
-//	  if(Escape.SCANNER && Escape.REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
-//	    sleepForAWhile(SCANNER_DELAY);
-//	  }
-//	  
-//	this.interrupt();
+	public void run() {
+		while(ALIVE) {	  
+		  if(REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
+		    sleepForAWhile(SCANNER_DELAY);
+		  }
+		  
+		this.interrupt();
   }
 
   /**
@@ -71,8 +54,8 @@ public class Escape extends Thread {
    */
   private int scan() {
 	// TODO: If there is no object behind what value this returns?
-	robot.SetSensorLowspeed(Escape.PORT);
-    return robot.SensorUS(Escape.PORT);
+	robot.SetSensorLowspeed(PORT);
+    return robot.SensorUS(PORT);
   }
 
   /**

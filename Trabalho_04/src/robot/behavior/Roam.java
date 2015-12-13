@@ -4,34 +4,30 @@ import java.util.Random;
 import robot.MyRobotLego;
 
 public class Roam extends Thread {
-	private boolean alive;
-	
 	private MyRobotLego robot;
+	
+	public static boolean ALIVE;
 	
 	private final static int AVERAGE_SPEED = 3;
 	private final static int DEFAULT_DISTANCE = 10;
 	private final static int DEFAULT_DELAY = 1500;
 	
 	public Roam(MyRobotLego robot) {
-		this.alive = true;
 		this.robot = robot;
+		Escape.ALIVE = true;
 		this.start();
 	}
-	
-	public boolean getAlive() { return this.alive; }
-	
-	public void setAlive(Boolean alive) { this.alive = alive; }
 	
 	public void run() {
 		int r = 0;
 		
-		while(alive) {
+		while(ALIVE) {
 			r = randomNumber(1, 3, r);
 			switch(r) {
 			case 1:
 //				robot.Reta(DEFAULT_DISTANCE);
 //				robot.Parar(false);
-				sleepForAWhile(calculateDelay(DEFAULT_DISTANCE) - 1500);
+				sleepForAWhile(calculateDelay(DEFAULT_DISTANCE, 0, 0) - 1500);
 				break;
 			case 2:	
 //				robot.CurvarDireita(randomNumber(5, 15, 0), 90);
@@ -44,7 +40,7 @@ public class Roam extends Thread {
 			}
 			
 			System.out.print(r);
-			sleepForAWhile(DEFAULT_DELAY);			
+			sleepForAWhile(calculateDelay(0, 0, 0));			
 		}
 		
 		this.interrupt();
@@ -67,8 +63,13 @@ public class Roam extends Thread {
 		}
 	}
 	
-	private int calculateDelay(int distance) {
-		return (distance / AVERAGE_SPEED) * 1000;
+	private int calculateDelay(int distance, int radius, int angle) {
+//		if(radius == 0 && angle == 0) return (distance / AVERAGE_SPEED) * 1000;
+		if(radius == 0 && angle == 0) return (radius * angle) + 100;
+		
+		if(distance > 0) return (1100 * distance) / 20;
+		
+		return DEFAULT_DELAY;
 	}
 	
 	

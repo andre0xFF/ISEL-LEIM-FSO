@@ -2,35 +2,25 @@ package robot.behavior;
 import robot.MyRobotLego;
 
 public class Avoid extends Thread {
-	private boolean alive;
-	
 	private MyRobotLego robot;
 	
-	private final static int SCANNER_DELAY= 500;
-	private final static int PORT = RobotLego.RobotLego.S_2;
-	
+	public static boolean ALIVE;
 	public static boolean SCANNER;
 	public static boolean REACTOR;
+	
+	private final static int SCANNER_DELAY = 500;
+	private final static int PORT = RobotLego.RobotLego.S_2;
 
 	public Avoid(MyRobotLego robot) {
-	    this.alive = true;
 	    this.robot = robot;
-	    Escape.SCANNER = true;
-	    Escape.REACTOR = true;
+	    Avoid.ALIVE = true;
+	    Avoid.SCANNER = true;
+	    Avoid.REACTOR = true;
 	    this.start();
 	}
 
-	public boolean getAlive() { return this.alive; }
-	public boolean getActive() { return (Avoid.SCANNER && Avoid.REACTOR); }
-	
-	public void setAlive(Boolean alive) { this.alive = alive; }
-	public void setActive(Boolean active) { 
-		Escape.SCANNER = active;
-		Escape.REACTOR = active;
-	}
-
 	public void run() {
-		while(alive) {
+		while(ALIVE) {
 			if(scan()) react();
 			sleepForAWhile(SCANNER_DELAY);
 		}
@@ -43,9 +33,8 @@ public class Avoid extends Thread {
 	 * @return if collision occurred
 	 */
 	public boolean scan() {
-		robot.SetSensorTouch(Avoid.PORT);
-		robot.Sensor(Avoid.PORT);
-		return robot.Sensor(Avoid.PORT) == 1 ? true : false;
+		robot.SetSensorTouch(PORT);
+		return robot.Sensor(PORT) == 1 ? true : false;
 	}
 	
 	/**

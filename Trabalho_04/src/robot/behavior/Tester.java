@@ -12,13 +12,11 @@ public class Tester {
 	private static void escape() throws InterruptedException {
 		Escape escaper = new Escape(null, 5, 250);
 		for(int j = 0; j < 20; j++) {
-			System.out.println("he");
+			System.out.println("Tester: " + Escape.ALIVE);
 			Thread.sleep(1000);
-			escaper.setActivee(false);
+			Escape.ALIVE = !Escape.ALIVE;
 		}
 //		Thread thread = new Thread(escaper);
-		
-		escaper.setActive(false);
 	
 		System.out.println("Scanner: " + Escape.SCANNER);
 		System.out.println("Scanner: " + Escape.REACTOR);
@@ -27,11 +25,6 @@ public class Tester {
 			escaper.simulateReact(50 + i, 30, 100, 5, 250);
 			Thread.sleep(500);
 		}
-
-		System.out.println("Thread: " + escaper.getAlive());
-		escaper.setAlive(false);
-//		thread.join();
-		System.out.println("Thread: " + escaper.getAlive());
 	}
 	
 	private static void roam() throws InterruptedException {
