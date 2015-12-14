@@ -8,6 +8,8 @@ public class Avoid extends Thread {
 	public static boolean SCANNER;
 	public static boolean REACTOR;
 	
+	public final static int BEHAVIOUR = 2;
+	
 	private final static int SCANNER_DELAY = 500;
 	private final static int PORT = RobotLego.RobotLego.S_2;
 
@@ -16,6 +18,7 @@ public class Avoid extends Thread {
 	    Avoid.ALIVE = true;
 	    Avoid.SCANNER = true;
 	    Avoid.REACTOR = true;
+	    robot.SetSensorTouch(PORT);
 	    this.start();
 	}
 
@@ -27,13 +30,16 @@ public class Avoid extends Thread {
 	  
 		this.interrupt();
 	}
+	
+	public static void terminate() {
+		ALIVE = false;
+	}
 
 	/**
 	 * Use the touch sensor to check for collision
 	 * @return if collision occurred
 	 */
 	public boolean scan() {
-		robot.SetSensorTouch(PORT);
 		return robot.Sensor(PORT) == 1 ? true : false;
 	}
 	

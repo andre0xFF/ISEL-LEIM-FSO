@@ -1,11 +1,16 @@
 package robot;
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
+import robot.behavior.*;
 
 public class MyRobotLego {
 	private JTextField l;
 	private boolean liveMode;
 	private RobotLego robot;
+	
+	private Roam roam;
+	private Avoid avoid;
+	private Escape escape;
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
@@ -22,10 +27,12 @@ public class MyRobotLego {
 		return true;
 	}
 
-	public void CloseNXT() {
+	public boolean CloseNXT() {
 		l.setText("Connection is closed");
 
 		if (liveMode) robot.CloseNXT();
+		
+		return true;
 	}
 
 	public void Reta(int units) {
@@ -62,20 +69,19 @@ public class MyRobotLego {
 
 	public void shutdown() { CloseNXT(); }
 
-	public void escape(Boolean start) {
-		//memory.setMODE_ESCAPE = start;
-		// TODO: Start/stop run thread
+	public void roam(boolean alive) {
+		if(alive) roam = new Roam(this);
+		else Roam.ALIVE = false;
 	}
-
-	public void avoid(Boolean start) {
-		//memory.setMODE_AVOID = start;
-		// TODO: Start/stop avoid obstacles thread
+	
+	public void avoid(boolean alive) {
+		if(alive) avoid = new Avoid(this);
+		else Avoid.terminate();
 	}
-
-	public void roam(Boolean start) {
-		//memory.setMODE_ROAM = start;
-		// TODO: Start/stop roaming thread
-		// TODO: Disable gui commands
+	
+	public void escape(boolean alive, int min, int max) {
+		if(alive) escape = new Escape(this, min, max);
+		else Escape.ALIVE = false;	
 	}
 	
 	public void SetSpeed(int speed) {

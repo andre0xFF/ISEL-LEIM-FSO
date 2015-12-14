@@ -8,6 +8,8 @@ public class Roam extends Thread {
 	
 	public static boolean ALIVE;
 	
+	public final static int BEHAVIOUR = 1;
+	
 	private final static int AVERAGE_SPEED = 3;
 	private final static int DEFAULT_DISTANCE = 10;
 	private final static int DEFAULT_DELAY = 1500;
@@ -25,17 +27,17 @@ public class Roam extends Thread {
 			r = randomNumber(1, 3, r);
 			switch(r) {
 			case 1:
-//				robot.Reta(DEFAULT_DISTANCE);
-//				robot.Parar(false);
-				sleepForAWhile(calculateDelay(DEFAULT_DISTANCE, 0, 0) - 1500);
+				robot.Reta(DEFAULT_DISTANCE);
+				robot.Parar(false);
+				sleepForAWhile(calculateDelay(DEFAULT_DISTANCE, 0, 0));
 				break;
 			case 2:	
-//				robot.CurvarDireita(randomNumber(5, 15, 0), 90);
-//				robot.Parar(false);
+				robot.CurvarDireita(randomNumber(5, 15, 0), 90);
+				robot.Parar(false);
 				break;
 			case 3:
-//				robot.CurvarEsquerda(randomNumber(5, 15, 0), 90);
-//				robot.Parar(false);
+				robot.CurvarEsquerda(randomNumber(5, 15, 0), 90);
+				robot.Parar(false);
 				break;
 			}
 			

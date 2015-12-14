@@ -2,19 +2,21 @@ package robot.behavior;
 import robot.MyRobotLego;
 
 public class Escape extends Thread {  
-  private MyRobotLego robot;
-  private int minDistance;
-  private int maxDistance;
-  private int objDistance;
-
-  public static boolean ALIVE;
-  public static boolean SCANNER;
-  public static boolean REACTOR;
-  
-  private final static int MIN_SPEED = 30;
-  private final static int MAX_SPEED = 100;
-  private final static int SCANNER_DELAY = 500;
-  private final static int PORT = RobotLego.RobotLego.S_1;
+	private MyRobotLego robot;
+	private int minDistance;
+	private int maxDistance;
+	private int objDistance;
+	
+	public static boolean ALIVE;
+	public static boolean SCANNER;
+	public static boolean REACTOR;
+	
+	public final static int BEHAVIOUR = 3;
+	  
+	private final static int MIN_SPEED = 30;
+	private final static int MAX_SPEED = 100;
+	private final static int SCANNER_DELAY = 500;
+	private final static int PORT = RobotLego.RobotLego.S_1;
   
   public Escape(MyRobotLego robot, int minDistance, int maxDistance) {
 	this.robot = robot;
@@ -23,6 +25,7 @@ public class Escape extends Thread {
 	Escape.ALIVE = true;
     Escape.SCANNER = true;
     Escape.REACTOR = true;
+    robot.SetSensorLowspeed(PORT);
     this.start();
   }
 
@@ -53,8 +56,7 @@ public class Escape extends Thread {
    * @return How far the object is related to the robot [0..255]
    */
   private int scan() {
-	// TODO: If there is no object behind what value this returns?
-	robot.SetSensorLowspeed(PORT);
+	// TODO: If there is no object behind what value this returns?	
     return robot.SensorUS(PORT);
   }
 
