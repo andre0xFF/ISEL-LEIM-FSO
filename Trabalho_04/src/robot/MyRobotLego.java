@@ -71,7 +71,7 @@ public class MyRobotLego {
 
 	public void roam(boolean alive) {
 		if(alive) roam = new Roam(this);
-		else Roam.ALIVE = false;
+		else Roam.alive = false;
 	}
 	
 	public void avoid(boolean alive) {

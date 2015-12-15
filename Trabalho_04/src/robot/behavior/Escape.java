@@ -7,12 +7,12 @@ public class Escape extends Thread {
 	private int maxDistance;
 	private int objDistance;
 	
-	public static boolean ALIVE;
-	public static boolean SCANNER;
-	public static boolean REACTOR;
+	// volatile variable is used to make all changes to be written into main memory instead of CPU Cache
+	public boolean alive;
+	public boolean scanner;
+	public boolean reactor;
 	
-	public final static int BEHAVIOUR = 3;
-	  
+	public final static int BEHAVIOUR_ID = 3; 
 	private final static int MIN_SPEED = 30;
 	private final static int MAX_SPEED = 100;
 	private final static int SCANNER_DELAY = 500;
@@ -22,18 +22,18 @@ public class Escape extends Thread {
 	this.robot = robot;
     this.minDistance = minDistance;
     this.maxDistance = maxDistance;
-	Escape.ALIVE = true;
-    Escape.SCANNER = true;
-    Escape.REACTOR = true;
-    robot.SetSensorLowspeed(PORT);
+	this.alive = true;
+    this.scanner = true;
+    this.reactor = true;
+    this.robot.SetSensorLowspeed(PORT);
     this.start();
   }
 
 //  public void run() {
-//	for(int j = 0; j < 20; j++) {
-//		System.out.println("Escape: " + Escape.ALIVE);
+//	while(alive) {
+//		System.out.println("I'm alive");
 //		try {
-//			Thread.sleep(1000);
+//			Thread.sleep(500);
 //		} catch (InterruptedException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
@@ -41,12 +41,14 @@ public class Escape extends Thread {
 //	}
 //	
 //	return;
+//  }
 	
 	public void run() {
-		while(ALIVE) {	  
-		  if(REACTOR) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
-		    sleepForAWhile(SCANNER_DELAY);
-		  }
+		while(alive) {	  
+		  if(reactor) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
+		  
+		  sleepForAWhile(SCANNER_DELAY);
+		}
 		  
 		this.interrupt();
   }

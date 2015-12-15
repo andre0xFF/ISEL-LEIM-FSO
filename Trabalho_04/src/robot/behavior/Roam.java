@@ -6,24 +6,23 @@ import robot.MyRobotLego;
 public class Roam extends Thread {
 	private MyRobotLego robot;
 	
-	public static boolean ALIVE;
+	public boolean alive;
 	
-	public final static int BEHAVIOUR = 1;
-	
+	public final static int BEHAVIOUR_ID = 1;
 	private final static int AVERAGE_SPEED = 3;
 	private final static int DEFAULT_DISTANCE = 10;
 	private final static int DEFAULT_DELAY = 1500;
 	
 	public Roam(MyRobotLego robot) {
 		this.robot = robot;
-		Escape.ALIVE = true;
+		this.alive = true;
 		this.start();
 	}
 	
 	public void run() {
 		int r = 0;
 		
-		while(ALIVE) {
+		while(alive) {
 			r = randomNumber(1, 3, r);
 			switch(r) {
 			case 1:

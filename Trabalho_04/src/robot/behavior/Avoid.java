@@ -4,35 +4,30 @@ import robot.MyRobotLego;
 public class Avoid extends Thread {
 	private MyRobotLego robot;
 	
-	public static boolean ALIVE;
-	public static boolean SCANNER;
-	public static boolean REACTOR;
+	public boolean alive;
+	public boolean scanner;
+	public boolean reactor;
 	
-	public final static int BEHAVIOUR = 2;
-	
+	public final static int BEHAVIOUR_ID = 2;
 	private final static int SCANNER_DELAY = 500;
 	private final static int PORT = RobotLego.RobotLego.S_2;
 
 	public Avoid(MyRobotLego robot) {
 	    this.robot = robot;
-	    Avoid.ALIVE = true;
-	    Avoid.SCANNER = true;
-	    Avoid.REACTOR = true;
-	    robot.SetSensorTouch(PORT);
+	    this.alive = true;
+	    this.scanner = true;
+	    this.reactor = true;
+	    this.robot.SetSensorTouch(PORT);
 	    this.start();
 	}
 
 	public void run() {
-		while(ALIVE) {
+		while(alive) {
 			if(scan()) react();
 			sleepForAWhile(SCANNER_DELAY);
 		}
-	  
+		
 		this.interrupt();
-	}
-	
-	public static void terminate() {
-		ALIVE = false;
 	}
 
 	/**
