@@ -71,17 +71,17 @@ public class MyRobotLego {
 
 	public void roam(boolean alive) {
 		if(alive) roam = new Roam(this);
-		else Roam.alive = false;
+		else roam.alive = false;
 	}
 	
 	public void avoid(boolean alive) {
 		if(alive) avoid = new Avoid(this);
-		else Avoid.terminate();
+		else avoid.alive = false;
 	}
 	
 	public void escape(boolean alive, int min, int max) {
 		if(alive) escape = new Escape(this, min, max);
-		else Escape.ALIVE = false;	
+		else escape.alive = false;
 	}
 	
 	public void SetSpeed(int speed) {
