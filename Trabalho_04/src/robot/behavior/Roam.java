@@ -4,11 +4,10 @@ import java.util.Random;
 import robot.MyRobotLego;
 
 public class Roam extends Thread {
-	private MyRobotLego robot;
+	private final MyRobotLego robot;
 	
 	public boolean alive;
 	
-	public final static int BEHAVIOUR_ID = 1;
 	private final static int AVERAGE_SPEED = 3;
 	private final static int DEFAULT_DISTANCE = 10;
 	private final static int DEFAULT_DELAY = 1500;
@@ -20,31 +19,66 @@ public class Roam extends Thread {
 	}
 	
 	public void run() {
-		int r = 0;
-		
+
 		while(alive) {
-			r = randomNumber(1, 3, r);
-			switch(r) {
-			case 1:
-				robot.Reta(DEFAULT_DISTANCE);
-				robot.Parar(false);
-				sleepForAWhile(calculateDelay(DEFAULT_DISTANCE, 0, 0));
-				break;
-			case 2:	
-				robot.CurvarDireita(randomNumber(5, 15, 0), 90);
-				robot.Parar(false);
-				break;
-			case 3:
-				robot.CurvarEsquerda(randomNumber(5, 15, 0), 90);
-				robot.Parar(false);
-				break;
+			robot.addBehaviour();
+			synchronized(robot) {
+	
+				while(robot.getActiveBehaviours() > 1) {
+					try {
+					robot.wait();
+					} catch (InterruptedException e) {
+					e.printStackTrace();
+					}		
+				}
+
+				System.out.println("Roam: I'm alive " + robot.getActiveBehaviours());
+				robot.notify();
 			}
-			
-			System.out.print(r);
-			sleepForAWhile(calculateDelay(0, 0, 0));			
+			robot.rmBehaviour();
+			sleepForAWhile(1000);
 		}
-		
+			
 		this.interrupt();
+	}
+	
+//	public void run() {
+//		int r = 0;
+//		
+//		while(alive) {
+//			react(randomNumber(1, 3, r));
+//			sleepForAWhile(calculateDelay(0, 0, 0));
+//		}
+//
+//		
+//		this.interrupt();
+//	}
+	
+	public void react(int order) {
+		switch(order) {
+		case 1:
+			System.out.print("Moving forward " + DEFAULT_DISTANCE + " units");
+			robot.Reta(DEFAULT_DISTANCE);
+			robot.Parar(false);
+			sleepForAWhile(calculateDelay(DEFAULT_DISTANCE, 0, 0));
+			break;
+		case 2:
+			{
+				int radius = randomNumber(5, 15, 0);
+				System.out.print("Turning right " + radius + " radius " + 90 + " angle");
+				robot.CurvarDireita(radius, 90);
+				robot.Parar(false);
+			}
+			break;
+		case 3:
+			{
+				int radius = randomNumber(5, 15, 0);
+				System.out.print("Turning left " + radius + " radius " + 90 + " angle");
+				robot.CurvarEsquerda(radius, 90);
+				robot.Parar(false);
+			}
+			break;
+		}	
 	}
 	
 	public int randomNumber(int min, int max, int previous) {

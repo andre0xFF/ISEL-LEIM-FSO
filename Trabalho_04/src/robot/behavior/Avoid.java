@@ -2,13 +2,12 @@ package robot.behavior;
 import robot.MyRobotLego;
 
 public class Avoid extends Thread {
-	private MyRobotLego robot;
+	private final MyRobotLego robot;
 	
 	public boolean alive;
 	public boolean scanner;
 	public boolean reactor;
 	
-	public final static int BEHAVIOUR_ID = 2;
 	private final static int SCANNER_DELAY = 500;
 	private final static int PORT = RobotLego.RobotLego.S_2;
 
@@ -17,18 +16,30 @@ public class Avoid extends Thread {
 	    this.alive = true;
 	    this.scanner = true;
 	    this.reactor = true;
-	    this.robot.SetSensorTouch(PORT);
+	    //this.robot.SetSensorTouch(PORT);
 	    this.start();
 	}
-
+	
 	public void run() {
 		while(alive) {
-			if(scan()) react();
-			sleepForAWhile(SCANNER_DELAY);
+			robot.addBehaviour();
+			synchronized(robot) {
+				System.out.println("Avoid: I'm alive " + robot.getActiveBehaviours());
+				sleepForAWhile(500);
+				robot.notify();
+			}
+			robot.rmBehaviour();
 		}
-		
-		this.interrupt();
 	}
+
+//	public void run() {
+//		while(alive) {
+//			if(scan()) react();
+//			sleepForAWhile(SCANNER_DELAY);
+//		}
+//		
+//		this.interrupt();
+//	}
 
 	/**
 	 * Use the touch sensor to check for collision
@@ -42,11 +53,13 @@ public class Avoid extends Thread {
 	 * Makes the robot avoid an obstacle
 	 */
 	public void react() {
-		robot.Parar(true);
-		robot.Reta(-20);
-		robot.Parar(false);
-		robot.CurvarEsquerda(0, 90);
-		robot.Parar(false);
+		synchronized(robot) {
+			robot.Parar(true);
+			robot.Reta(-20);
+			robot.Parar(false);
+			robot.CurvarEsquerda(0, 90);
+			robot.Parar(false);
+		}
   	}
 
 	  

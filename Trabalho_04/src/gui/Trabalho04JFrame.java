@@ -1,8 +1,6 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -97,11 +95,23 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxFugir.setSelected(fugir);
 		txtLog.setText(debugText);
 		
+		txtAngulo.setEnabled(onOff);
+		txtDistancia.setEnabled(onOff);
+		txtRaio.setEnabled(onOff);
+		txtOffsetDireita.setEnabled(onOff);
+		txtOffsetEsquerda.setEnabled(onOff);
+		
 		btnFrente.setEnabled(onOff);
 		btnDireita.setEnabled(onOff);
 		btnEsquerda.setEnabled(onOff);
 		btnRectaguarda.setEnabled(onOff);
 		btnParar.setEnabled(onOff);
+		
+		textDistMaxFugir.setEnabled(onOff);
+		textDistMinFugir.setEnabled(onOff);
+		chckbxEvitarObstaculo.setEnabled(onOff);
+		chckbxFugir.setEnabled(onOff);
+		chckbxVaguear.setEnabled(onOff);
 	}
 
 	public static void main(String[] args) {
@@ -332,13 +342,18 @@ public class Trabalho04JFrame extends JFrame {
 		contentPane.add(chckbxEvitarObstaculo);
 		
 		chckbxFugir = new JCheckBox("Fugir");
+		chckbxFugir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				robotLego.escape(chckbxFugir.isSelected(), Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
+			}
+		});
 		chckbxFugir.setBounds(443, 147, 97, 23);
 		contentPane.add(chckbxFugir);
 		
 		textDistMinFugir = new JTextField();
 		textDistMinFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				robotLego.escape(chckbxFugir.isSelected(), Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
+				if(stringToInteger(textDistMaxFugir.getText()) < 0) textDistMinFugir.setText("0");
 			}
 		});
 		textDistMinFugir.setText("0");
@@ -349,11 +364,7 @@ public class Trabalho04JFrame extends JFrame {
 		textDistMaxFugir = new JTextField();
 		textDistMaxFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				distMaxFugir = stringToInteger(textDistMaxFugir.getText());
-				if(distMaxFugir > 255){
-					distMaxFugir = 255;
-				}
-				log("Distancia Maxima para fugir:" + Integer.toString(distMaxFugir));
+				if(stringToInteger(textDistMaxFugir.getText()) > 255) textDistMaxFugir.setText("255");
 			}
 		});
 		textDistMaxFugir.setText("255");
@@ -372,9 +383,7 @@ public class Trabalho04JFrame extends JFrame {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-				if(onOff) {
-					robotLego.CloseNXT();
-				}
+				if(onOff) robotLego.CloseNXT();
 			}
 		});
 	}
@@ -396,17 +405,13 @@ public class Trabalho04JFrame extends JFrame {
 	}
 	
 	void log(String v) {
-		if (!debug) {
-			return;
-		}
+		if (!debug) return;
 		
 		txtLog.setText(v);
 	}
 	
 	public void robotMove(int distance, int radius, int angle, int direction, int offsetL, int offsetR) {
-		if (!onOff) {
-			return;
-		}
+		if (!onOff) return;
 
 		switch(direction) {
 			case 8:

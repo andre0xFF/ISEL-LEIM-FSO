@@ -1,18 +1,16 @@
 package robot.behavior;
 import robot.MyRobotLego;
 
-public class Escape extends Thread {  
-	private MyRobotLego robot;
-	private int minDistance;
-	private int maxDistance;
+public class Escape extends Thread {
+	private final MyRobotLego robot;
+	private final int minDistance;
+	private final int maxDistance;
 	private int objDistance;
 	
-	// volatile variable is used to make all changes to be written into main memory instead of CPU Cache
 	public boolean alive;
 	public boolean scanner;
 	public boolean reactor;
 	
-	public final static int BEHAVIOUR_ID = 3; 
 	private final static int MIN_SPEED = 30;
 	private final static int MAX_SPEED = 100;
 	private final static int SCANNER_DELAY = 500;
@@ -25,33 +23,46 @@ public class Escape extends Thread {
 	this.alive = true;
     this.scanner = true;
     this.reactor = true;
-    this.robot.SetSensorLowspeed(PORT);
+    //this.robot.SetSensorLowspeed(PORT);
     this.start();
   }
 
-//  public void run() {
-//	while(alive) {
-//		System.out.println("I'm alive");
-//		try {
-//			Thread.sleep(500);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	return;
-//  }
-	
-	public void run() {
-		while(alive) {	  
-		  if(reactor) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);		  
-		  
-		  sleepForAWhile(SCANNER_DELAY);
+  public void run() {
+
+	while(alive) {
+		robot.addBehaviour();
+		synchronized(robot) {
+			
+			while(robot.getActiveBehaviours() > 2) {
+				try {
+				robot.wait();
+				} catch (InterruptedException e) {
+				e.printStackTrace();
+				}
+			}
+			
+			System.out.println("Escape: I'm alive " + robot.getActiveBehaviours());
+			sleepForAWhile(500);
+			robot.notify();
 		}
-		  
-		this.interrupt();
+		robot.rmBehaviour();
+
+	}
+	
+
+	this.interrupt();
+
   }
+	
+//	public void run() {
+//		while(alive) {			
+//			if(scan() > 0 && reactor) react(scan(), MIN_SPEED, MAX_SPEED, minDistance, maxDistance);	  
+//			  
+//			sleepForAWhile(SCANNER_DELAY);
+//		}
+//		  
+//		this.interrupt();
+//	}
 
   /**
    * Read the scanner result
@@ -70,21 +81,23 @@ public class Escape extends Thread {
    * @param minDistance Safe zone minimum distance
    * @param maxDistance Safe zone maximum allowed distance
    */
-  public void react(int distance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {
-    if(objDistance < minDistance || objDistance > maxDistance) return;
-    
-    int relDistance = distance - minDistance;
-    
-    int speed = maxSpeed - (relDistance * 100 / maxDistance);
-    
-    if(speed < minSpeed) speed += minSpeed - speed;
-    
-    robot.Parar(true);
-    robot.SetSpeed(speed);
-    robot.Reta(maxDistance - objDistance);
+  public void react(int objectDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {
+	synchronized(robot) {
+		if(objectDistance < minDistance || objectDistance > maxDistance) return;
+		
+		int relDistance = objectDistance - minDistance;
+		
+		int speed = maxSpeed - (relDistance * 100 / maxDistance);
+		
+		if(speed < minSpeed) speed += minSpeed - speed;
+		
+		robot.Parar(true);
+		robot.SetSpeed(speed);
+		robot.Reta(maxDistance - objectDistance);
+	}
   }
   
-  protected void simulateReact(int objDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) throws InterruptedException {		
+  protected void simulateReact(int objDistance, int minSpeed, int maxSpeed, int minDistance, int maxDistance) {		
     if(objDistance < minDistance || objDistance > maxDistance) return;
     
     int relDistance = objDistance - minDistance;

@@ -11,13 +11,22 @@ public class MyRobotLego {
 	private Roam roam;
 	private Avoid avoid;
 	private Escape escape;
+	
+	private int activeBehaviours;
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
 		this.liveMode = liveMode;
+		this.activeBehaviours = 0;
 
 		if(liveMode) robot = new RobotLego();
 	}
+	
+	public int getActiveBehaviours() { return this.activeBehaviours; }
+	
+	public void addBehaviour() { ++this.activeBehaviours; }
+	
+	public void rmBehaviour() { --this.activeBehaviours; }
 
 	public boolean OpenNXT(String name) {
 		l.setText("Connection is open");
@@ -39,6 +48,8 @@ public class MyRobotLego {
 		l.setText("Moving forward " + units + " units");
 
 		if (liveMode) robot.Reta(units);
+		
+		this.notifyAll();
 	}
 
 	public void CurvarDireita(int radius, int angle) {
