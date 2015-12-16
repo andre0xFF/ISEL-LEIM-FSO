@@ -4,29 +4,50 @@ import RobotLego.RobotLego;
 import robot.behavior.*;
 
 public class MyRobotLego {
-	private JTextField l;
-	private boolean liveMode;
+	private final JTextField l;
+	private final boolean liveMode;
 	private RobotLego robot;
 	
 	private Roam roam;
 	private Avoid avoid;
 	private Escape escape;
 	
-	private int activeBehaviours;
+	private int nBehaviours = 0;
+	
+	public final static int MIN_SPEED = 30;
+	public final static int MAX_SPEED = 100;
+	private final static int DEFAULT_DELAY = 1500;
+	private final static int DEFAULT_AVERAGE_SPEED = 3;
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
 		this.liveMode = liveMode;
-		this.activeBehaviours = 0;
 
 		if(liveMode) robot = new RobotLego();
 	}
 	
-	public int getActiveBehaviours() { return this.activeBehaviours; }
+	public int getBehaviours() { return this.nBehaviours; }
 	
-	public void addBehaviour() { ++this.activeBehaviours; }
+	public void addBehaviour() { ++this.nBehaviours; }
 	
-	public void rmBehaviour() { --this.activeBehaviours; }
+	public void rmBehaviour() { --this.nBehaviours; }
+	
+	public static void sleepForAWhile(int ms) {	  
+		try {
+			Thread.sleep(ms);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static int calculateDelay(int distance, int radius, int angle) {
+		if(radius == 0 && angle == 0) return (distance / DEFAULT_AVERAGE_SPEED) * 1000;
+//		if(distance == 0 && radius > 0 && angle > 0) return (radius * angle) + 100;
+		
+		if(distance > 0) return (1100 * distance) / 20;
+		
+		return DEFAULT_DELAY;
+	}
 
 	public boolean OpenNXT(String name) {
 		l.setText("Connection is open");
