@@ -1,23 +1,26 @@
 package robot;
+import java.util.concurrent.Semaphore;
+
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
-import robot.behavior.*;
+import robot.automate.*;
 
-public class MyRobotLego {
+public class MyRobotLego implements ObjectListener {
 	private final JTextField l;
-	private final boolean liveMode;
-	private RobotLego robot;
 	
-	private Roam roam;
-	private Avoid avoid;
-	private Escape escape;
-	
-	private int nBehaviours = 0;
-	
-	public final static int MIN_SPEED = 30;
-	public final static int MAX_SPEED = 100;
 	private final static int DEFAULT_DELAY = 1500;
 	private final static int DEFAULT_AVERAGE_SPEED = 3;
+	private final static int FRONT_SCANNER_PORT = RobotLego.S_2;
+	private final static int BACK_SCANNER_PORT = RobotLego.S_1;
+	private final boolean liveMode;
+	
+	private RobotLego robot;
+	private FrontScanner fScanner;
+	private BackScanner bScanner;
+	private Roam roam;
+	
+	private Semaphore permission = new Semaphore(1);
+
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
 		this.l = l;
@@ -25,19 +28,11 @@ public class MyRobotLego {
 
 		if(liveMode) robot = new RobotLego();
 	}
-	
-	public int getBehaviours() { return this.nBehaviours; }
-	
-	public void addBehaviour() { ++this.nBehaviours; }
-	
-	public void rmBehaviour() { --this.nBehaviours; }
+
 	
 	public static void sleepForAWhile(int ms) {	  
-		try {
-			Thread.sleep(ms);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try { Thread.sleep(ms); } 
+		catch (InterruptedException e) { e.printStackTrace(); }
 	}
 	
 	public static int calculateDelay(int distance, int radius, int angle) {
@@ -69,8 +64,6 @@ public class MyRobotLego {
 		l.setText("Moving forward " + units + " units");
 
 		if (liveMode) robot.Reta(units);
-		
-		this.notifyAll();
 	}
 
 	public void CurvarDireita(int radius, int angle) {
@@ -98,23 +91,6 @@ public class MyRobotLego {
 
 		if (liveMode) robot.Parar(trueStop);
 	}
-
-	public void shutdown() { CloseNXT(); }
-
-	public void roam(boolean alive) {
-		if(alive) roam = new Roam(this);
-		else roam.alive = false;
-	}
-	
-	public void avoid(boolean alive) {
-		if(alive) avoid = new Avoid(this);
-		else avoid.alive = false;
-	}
-	
-	public void escape(boolean alive, int min, int max) {
-		if(alive) escape = new Escape(this, min, max);
-		else escape.alive = false;
-	}
 	
 	public void SetSpeed(int speed) {
 		if (liveMode) robot.SetSpeed(speed);
@@ -139,4 +115,40 @@ public class MyRobotLego {
 		
 		return 0;
 	}
+
+	@Override
+	public void frontObjectDetected(int distance) {
+		new Avoid(this, permission);
+	}
+
+	@Override
+	public void backObjectDetected(int distance) {
+		new Escape(this, permission, distance, bScanner.getMinDistance(), bScanner.getMaxDistance());
+		System.out.print("Robot $ Object distance: " + distance);
+	}
+	
+	public void toggleAvoid() {
+		if(fScanner == null || !fScanner.alive) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
+		else fScanner.alive = false;
+	}
+	
+	public void toggleEscape(int minDistance, int maxDistance) {
+		if(bScanner == null || !bScanner.alive) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
+		else bScanner.alive = false;
+	}
+	
+	public void toggleEscape() {
+		if(bScanner == null || !bScanner.alive) bScanner = new BackScanner(this, BACK_SCANNER_PORT);
+		else bScanner.alive = false;
+	}
+	
+	public void toggleRoam() {
+		if(roam == null || !roam.alive) roam = new Roam(this, permission);
+		else roam.alive = false;
+	}
+}
+
+interface ObjectListener {
+	void frontObjectDetected(int distance);
+	void backObjectDetected(int distance);
 }

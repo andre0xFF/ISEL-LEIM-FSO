@@ -1,5 +1,4 @@
-package robot.automate;
-import robot.MyRobotLego;
+package robot;
 
 public class FrontScanner extends Scanner {	
 	public FrontScanner(MyRobotLego robot, int port) {
@@ -10,8 +9,8 @@ public class FrontScanner extends Scanner {
 	
 	public void run() {
 		while(alive) {
-			if(scan() > 0) react();
-			MyRobotLego.sleepForAWhile(super.getDelay());
+			if(scan() > 0) objectDetected(0);
+			MyRobotLego.sleepForAWhile(getDelay());
 		}
 		this.interrupt();
 	}
@@ -24,7 +23,10 @@ public class FrontScanner extends Scanner {
 
 
 	@Override
-	public synchronized void react() {
-		new Avoid(ROBOT);	
+	public void objectDetected(int distance) {
+		for(ObjectListener listener : listeners) {
+			listener.frontObjectDetected(distance);
+		}
+		
 	}
 }

@@ -55,15 +55,12 @@ public class Trabalho04JFrame extends JFrame {
 	
 	private JTextField textDistMinFugir;
 	private JTextField textDistMaxFugir;
-	private int distMinFugir;
-	private int distMaxFugir;
 	
 	private boolean vaguear;
 	private boolean evitarObs;
 	private boolean fugir;
 	
 	private MyRobotLego robotLego;
-	private final int comMode = 1;
 	
 	void initVariables() {
 		robotName = "Link";
@@ -326,7 +323,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxVaguear.setBounds(443, 92, 97, 23);
 		chckbxVaguear.addActionListener(new ActionListener() {		
 			public void actionPerformed(ActionEvent e) {
-				robotLego.roam(chckbxVaguear.isSelected());
+				robotLego.toggleRoam();
 			}
 			
 		});
@@ -336,7 +333,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxEvitarObstaculo.setBounds(443, 118, 122, 23);
 		chckbxEvitarObstaculo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				robotLego.avoid(chckbxEvitarObstaculo.isSelected());
+				robotLego.toggleAvoid();
 			}
 		});
 		contentPane.add(chckbxEvitarObstaculo);
@@ -344,7 +341,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxFugir = new JCheckBox("Fugir");
 		chckbxFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotLego.escape(chckbxFugir.isSelected(), Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
+				robotLego.toggleEscape(Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
 			}
 		});
 		chckbxFugir.setBounds(443, 147, 97, 23);
