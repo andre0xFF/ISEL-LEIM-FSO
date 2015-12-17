@@ -147,8 +147,3 @@ public class MyRobotLego implements ObjectListener {
 		else roam.alive = false;
 	}
 }
-
-interface ObjectListener {
-	void frontObjectDetected(int distance);
-	void backObjectDetected(int distance);
-}

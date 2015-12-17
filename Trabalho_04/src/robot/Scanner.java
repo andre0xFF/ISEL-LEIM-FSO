@@ -32,3 +32,8 @@ public abstract class Scanner extends Thread {
 	public abstract void run();
 	public abstract int scan();
 }
+
+interface ObjectListener {
+	void frontObjectDetected(int distance);
+	void backObjectDetected(int distance);
+}
