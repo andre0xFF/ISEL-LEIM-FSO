@@ -38,7 +38,7 @@ public class Roam extends Behaviour {
 		
 		switch(lastOrder = randomOrder(1, 3, lastOrder)) {
 		case 1:
-			distance = DEFAULT_DISTANCE;
+			distance = randomOrder(5, 45, 0);
 			radius = 0;
 			angle = 0;
 			

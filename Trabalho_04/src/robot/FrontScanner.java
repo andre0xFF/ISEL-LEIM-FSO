@@ -35,6 +35,7 @@ public final class FrontScanner extends Scanner {
 	public void run() {
 		while(active) {
 			super.run();
+			if(!objectDetected && scan() > 0) objectDetected(scan());
 			MyRobotLego.sleep(getDelay());
 		}
 	}

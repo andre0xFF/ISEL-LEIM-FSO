@@ -59,8 +59,6 @@ public abstract class Scanner extends Thread {
 		}
 			
 		if(!active) this.interrupt();
-
-		if(scan() > 0) objectDetected(scan());
 	}	
 }
 

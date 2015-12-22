@@ -101,12 +101,12 @@ public class MyRobotLego implements RobotNervousSystem {
 	
 	@Override
 	public void roam() {
-		if(roam == null) roam = new Roam(this);
+		if(roam == null || (roam != null && !roam.isActive())) roam = new Roam(this);
 		else roam.deactivate();
 	}
 	@Override
 	public void escape(int minDistance, int maxDistance) { 
-		if(escape == null) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
+		if(bScanner == null || (bScanner != null && !bScanner.isActive())) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
 		else {
 			bScanner.deactivate();
 			if(escape != null) escape.deactivate();
@@ -114,7 +114,7 @@ public class MyRobotLego implements RobotNervousSystem {
 	}
 	@Override
 	public void avoid() {
-		if(fScanner == null) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
+		if(fScanner == null || (fScanner != null && !fScanner.isActive())) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
 		else {
 			fScanner.deactivate();
 			if(avoid != null) avoid.deactivate();

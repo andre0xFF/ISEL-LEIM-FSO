@@ -48,6 +48,9 @@ public final class BackScanner extends Scanner {
 	public void run() {
 		while(active) {
 			super.run();
+			int scanResult = scan();
+			if(!objectDetected && (scanResult > minDistance && scanResult < maxDistance)) objectDetected(scan());
+			else if(objectDetected && scanResult == 255) objectIsGone();
 			MyRobotLego.sleep(getDelay());
 		}
 	}
