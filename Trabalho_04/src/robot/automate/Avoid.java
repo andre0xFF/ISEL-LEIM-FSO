@@ -29,9 +29,7 @@ public class Avoid extends Behaviour {
 	@Override
 	public void action() {
 		System.out.println("Avoid: -20, left 90");
-		robot.Parar(true);
 		robot.Reta(-20);
-		robot.Parar(false);
 		robot.CurvarEsquerda(0, 90);
 		robot.Parar(false);
 		

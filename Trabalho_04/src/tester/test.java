@@ -10,6 +10,10 @@ import robot.automate.Roam;
 public class test {
 
 	public static void main(String[] args) throws InterruptedException {
+		testSensors();
+	}
+	
+	public static void testBehaviours() throws InterruptedException {
 		MyRobotLego robot = new MyRobotLego(new JTextField(), false);
 		Roam r = new Roam(robot);
 		Thread.sleep(3000);
