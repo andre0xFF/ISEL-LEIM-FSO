@@ -323,7 +323,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxVaguear.setBounds(443, 92, 97, 23);
 		chckbxVaguear.addActionListener(new ActionListener() {		
 			public void actionPerformed(ActionEvent e) {
-				robotLego.toggleRoam();
+				robotLego.roam();
 			}
 			
 		});
@@ -333,7 +333,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxEvitarObstaculo.setBounds(443, 118, 122, 23);
 		chckbxEvitarObstaculo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				robotLego.toggleAvoid();
+				robotLego.avoid();
 			}
 		});
 		contentPane.add(chckbxEvitarObstaculo);
@@ -341,7 +341,7 @@ public class Trabalho04JFrame extends JFrame {
 		chckbxFugir = new JCheckBox("Fugir");
 		chckbxFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotLego.toggleEscape(Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
+				robotLego.escape(Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
 			}
 		});
 		chckbxFugir.setBounds(443, 147, 97, 23);

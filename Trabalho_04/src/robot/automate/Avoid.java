@@ -1,41 +1,41 @@
 package robot.automate;
 
-import java.util.concurrent.Semaphore;
-
+import robot.FrontScanner;
 import robot.MyRobotLego;
 
 public class Avoid extends Behaviour {
+	private final FrontScanner scanner;
 
-	public Avoid(MyRobotLego robot, Semaphore permission) {
-		super(robot, permission);
-		this.start();
+	public Avoid(MyRobotLego robot, FrontScanner scanner) {
+		super(robot);
+		this.scanner = scanner;
+		setPriority(MAX_PRIORITY);
 	}
 
-	
+
 	@Override
 	public void run() {
-		action();
+		while(scanner.scan() > 0) {
+			synchronized(robot) {
+				action();
+				MyRobotLego.sleep(getDelay());
+			}
+		}
+		
 		this.interrupt();	
 	}
 
-	
+
 	@Override
-	public synchronized void action() {
-		try { permission.acquire(); }
-		catch (InterruptedException e1) { e1.printStackTrace(); }
-		
+	public void action() {
 		System.out.println("Avoid: -20, left 90");
-		ROBOT.Parar(true);
-		ROBOT.Reta(-20);
-		ROBOT.Parar(false);
-		ROBOT.CurvarEsquerda(0, 90);
-		ROBOT.Parar(false);
-
-		permission.release();
+		robot.Parar(true);
+		robot.Reta(-20);
+		robot.Parar(false);
+		robot.CurvarEsquerda(0, 90);
+		robot.Parar(false);
+		
+		MyRobotLego.sleep(calculateDelay(20, 0, 90) - getDelay());
 	}
-
-	
-	@Override
-	public synchronized void pause() {	}
 
 }

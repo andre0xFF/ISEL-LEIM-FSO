@@ -1,53 +1,55 @@
 package robot;
 
-public class BackScanner extends Scanner {
+public final class BackScanner extends Scanner {
 	private int minDistance = 5;
 	private int maxDistance = 250;
 	
+	public int getMinDistance() { return this.minDistance; }
+	public int getMaxDistance() { return this.maxDistance; }
+	public void setMinDistance(int min) { this.minDistance = min; }
+	public void setMaxDistance(int max) { this.maxDistance = max; }
 	
 	public BackScanner(MyRobotLego robot, int port) {
 		super(robot, port);
-		ROBOT.SetSensorLowspeed(port);
-		this.start();
+		this.setPriority(MIN_PRIORITY);
 	}
-	
 	
 	public BackScanner(MyRobotLego robot, int port, int minDistance, int maxDistance) {
 		super(robot, port);
 		this.minDistance = minDistance;
 		this.maxDistance = maxDistance;
-		ROBOT.SetSensorLowspeed(port);
-		this.start();
 	}
 	
+	@Override 
+	public int getDelay() { return this.delay; }
 	
-	public void setMinDistance(int min) { this.minDistance = min; }
-	public void setMaxDistance(int max) { this.maxDistance = max; }
-	public int getMinDistance() { return this.minDistance; }
-	public int getMaxDistance() { return this.maxDistance; } 
+	@Override
+	protected void setPort(int port) { robot.SetSensorLowspeed(port); }
 	
+	@Override
+	public int scan() { return robot.SensorUS(port); }
+	
+	@Override
+	public void objectDetected(int distance) {
+		if(objectDetected) return;
+		
+		objectDetected = true;
+		for(RobotNervousSystem listener : listeners)  listener.rearObjectDetected(distance);
+	}
+	
+	@Override
+	protected void objectIsGone() {
+		if(!objectDetected) return;
+		
+		objectDetected = false;
+		for(RobotNervousSystem listener : listeners) listener.rearObjectIsGone();
+	}	
 	
 	public void run() {
-		while(alive) {
-			if(scan() > 0) objectDetected(scan());
-			MyRobotLego.sleepForAWhile(getDelay());	
-		}
-		this.interrupt();
-	}
-
-	
-	@Override
-	public synchronized int scan() {
-		return ROBOT.SensorUS(PORT);
-	}
-
-	
-	@Override
-	public void objectDetected(int distance) {	
-		for(ObjectListener listener : listeners) {
-			listener.backObjectDetected(scan());
+		while(active) {
+			super.run();
+			MyRobotLego.sleep(getDelay());
 		}
 	}
-	
-	
+
 }

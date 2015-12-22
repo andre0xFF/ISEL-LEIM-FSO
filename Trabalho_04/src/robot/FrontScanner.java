@@ -1,32 +1,42 @@
 package robot;
 
-public class FrontScanner extends Scanner {	
+public final class FrontScanner extends Scanner {
 	public FrontScanner(MyRobotLego robot, int port) {
 		super(robot, port);
-		this.start();
+		this.setPriority(MAX_PRIORITY);
 	}
 	
-	
-	public void run() {
-		while(alive) {
-			if(scan() > 0) objectDetected(0);
-			MyRobotLego.sleepForAWhile(getDelay());
-		}
-		this.interrupt();
-	}
-
-
 	@Override
-	public synchronized int scan() {
-		return ROBOT.Sensor(PORT);
-	}
-
-
+	public int getDelay() { return this.delay; }
+	
+	@Override
+	protected void setPort(int port) { robot.SetSensorTouch(port); }
+	
+	@Override
+	public int scan() { return robot.Sensor(port); }
+	
 	@Override
 	public void objectDetected(int distance) {
-		for(ObjectListener listener : listeners) {
-			listener.frontObjectDetected(distance);
-		}
+		if(objectDetected) return;
 		
+		objectDetected = true;
+		
+		for(RobotNervousSystem listener : listeners) listener.frontObjectDetected(distance);
 	}
+	
+	@Override
+	protected void objectIsGone() {
+		if(!objectDetected) return;
+		
+		objectDetected = false;
+		for(RobotNervousSystem listener : listeners) listener.frontObjectIsGone();	
+	}
+	
+	public void run() {
+		while(active) {
+			super.run();
+			MyRobotLego.sleep(getDelay());
+		}
+	}
+	
 }

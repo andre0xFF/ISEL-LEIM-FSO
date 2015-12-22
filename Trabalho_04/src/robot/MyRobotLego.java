@@ -1,25 +1,23 @@
 package robot;
-import java.util.concurrent.Semaphore;
 
 import javax.swing.JTextField;
 import RobotLego.RobotLego;
 import robot.automate.*;
 
-public class MyRobotLego implements ObjectListener {
+public class MyRobotLego implements RobotNervousSystem {
 	private final JTextField l;
 	
-	private final static int DEFAULT_DELAY = 1500;
-	private final static int DEFAULT_AVERAGE_SPEED = 3;
 	private final static int FRONT_SCANNER_PORT = RobotLego.S_2;
 	private final static int BACK_SCANNER_PORT = RobotLego.S_1;
 	private final boolean liveMode;
 	
 	private RobotLego robot;
-	private FrontScanner fScanner;
-	private BackScanner bScanner;
-	private Roam roam;
 	
-	private Semaphore permission = new Semaphore(1);
+	private BackScanner bScanner;
+	private FrontScanner fScanner;
+	private Roam roam;
+	private Escape escape;
+	private Avoid avoid;
 
 
 	public MyRobotLego(JTextField l, boolean liveMode) {
@@ -27,21 +25,6 @@ public class MyRobotLego implements ObjectListener {
 		this.liveMode = liveMode;
 
 		if(liveMode) robot = new RobotLego();
-	}
-
-	
-	public static void sleepForAWhile(int ms) {	  
-		try { Thread.sleep(ms); } 
-		catch (InterruptedException e) { e.printStackTrace(); }
-	}
-	
-	public static int calculateDelay(int distance, int radius, int angle) {
-		if(radius == 0 && angle == 0) return (distance / DEFAULT_AVERAGE_SPEED) * 1000;
-//		if(distance == 0 && radius > 0 && angle > 0) return (radius * angle) + 100;
-		
-		if(distance > 0) return (1100 * distance) / 20;
-		
-		return DEFAULT_DELAY;
 	}
 
 	public boolean OpenNXT(String name) {
@@ -115,35 +98,44 @@ public class MyRobotLego implements ObjectListener {
 		
 		return 0;
 	}
+	
+	@Override
+	public void roam() { roam = new Roam(this); }
+	@Override
+	public void escape(int minDistance, int maxDistance) { bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance); }
+	@Override
+	public void avoid() { fScanner = new FrontScanner(this, FRONT_SCANNER_PORT); }
+
+	public static void sleep(int ms) {	  
+		try { Thread.sleep(ms); }
+		catch (InterruptedException e) { }
+	}
 
 	@Override
 	public void frontObjectDetected(int distance) {
-		new Avoid(this, permission);
+		if(roam != null && roam.isActive()) roam.pause();
+		if(escape != null && escape.isActive()) escape.deactivate();
+		if(bScanner != null && bScanner.isActive()) bScanner.pause();
+		
+		avoid = new Avoid(this, fScanner);
 	}
 
 	@Override
-	public void backObjectDetected(int distance) {
-		new Escape(this, permission, distance, bScanner.getMinDistance(), bScanner.getMaxDistance());
-		System.out.print("Robot $ Object distance: " + distance);
+	public void rearObjectDetected(int distance) {
+		if(roam != null && roam.isActive()) roam.pause();
+		
+		escape = new Escape(this, bScanner);	
 	}
 	
-	public void toggleAvoid() {
-		if(fScanner == null || !fScanner.alive) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
-		else fScanner.alive = false;
+	@Override
+	public void frontObjectIsGone() {
+		avoid = null;
+		if(roam != null && roam.isPaused()) roam.unpause();	
 	}
-	
-	public void toggleEscape(int minDistance, int maxDistance) {
-		if(bScanner == null || !bScanner.alive) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
-		else bScanner.alive = false;
-	}
-	
-	public void toggleEscape() {
-		if(bScanner == null || !bScanner.alive) bScanner = new BackScanner(this, BACK_SCANNER_PORT);
-		else bScanner.alive = false;
-	}
-	
-	public void toggleRoam() {
-		if(roam == null || !roam.alive) roam = new Roam(this, permission);
-		else roam.alive = false;
+
+	@Override
+	public void rearObjectIsGone() {
+		escape = null;
+		if(roam != null && roam.isPaused()) roam.unpause();	
 	}
 }
