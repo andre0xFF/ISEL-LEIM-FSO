@@ -22,6 +22,7 @@ public class Avoid extends Behaviour {
 			}
 		}
 		
+		robot.Parar(false);
 		this.interrupt();	
 	}
 

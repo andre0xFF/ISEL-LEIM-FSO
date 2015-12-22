@@ -25,6 +25,7 @@ public class Roam extends Behaviour {
 			}
 		}
 		
+		robot.Parar(false);
 		this.interrupt();
 	}
 

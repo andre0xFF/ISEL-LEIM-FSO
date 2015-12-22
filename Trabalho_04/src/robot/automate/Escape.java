@@ -34,6 +34,7 @@ public class Escape extends Behaviour {
 			objectDistance = scanner.scan();
 		}
 		
+		robot.Parar(false);
 		this.interrupt();
 	}
 
