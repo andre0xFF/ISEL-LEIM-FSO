@@ -20,7 +20,6 @@ public class Escape extends Behaviour {
 		this.minDistance = scanner.getMinDistance();
 		this.maxDistance = scanner.getMaxDistance();
 		this.setPriority(NORM_PRIORITY);
-		this.start();
 	}
 
 	

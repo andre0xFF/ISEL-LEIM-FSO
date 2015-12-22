@@ -20,7 +20,6 @@ public final class FrontScanner extends Scanner {
 		if(objectDetected) return;
 		
 		objectDetected = true;
-		
 		for(RobotNervousSystem listener : listeners) listener.frontObjectDetected(distance);
 	}
 	
