@@ -1,9 +1,7 @@
 .settings
-.metadata
 .recommenders
 **/bin/
 .idea
-*.jar
 *.gdoc
 *.pdf
 *.classpath
