@@ -1,0 +1,10 @@
+package robot.states;
+
+public class Scanner {
+
+}
+
+interface RobotNervousSystem {
+	void ObjectDetected(ActiveState state);
+	void ObjectIsGone();
+}

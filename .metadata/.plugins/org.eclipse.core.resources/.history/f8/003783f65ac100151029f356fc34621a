@@ -1,0 +1,37 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+public class State extends Thread {
+	public final static int DEFAULT_DELAY = 500;
+	
+	protected final MyRobotLego robot;
+	protected boolean active = true;
+	protected boolean pause = false;
+	protected int delay = DEFAULT_DELAY;
+	
+	public int getDelay() { return this.delay; }
+	
+	public void setDelay(int delay) { this.delay = delay; }
+	
+	public boolean isActive() { return this.active; }
+	
+	public void deactivate() { this.active = false; }
+	
+	public boolean isPaused() { return this.pause; }
+	
+	public void pause() { this.pause = true; }
+	
+	public void unpause() {
+		synchronized(robot) {
+			this.pause = false;
+			robot.notify();
+		}
+	}
+	
+	public State(MyRobotLego robot) {
+		this.robot = robot;
+		this.start();
+	}
+	
+}

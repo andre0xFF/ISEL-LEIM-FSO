@@ -1,0 +1,11 @@
+package robot.states;
+
+public class Scanner extends Thread {
+	protected final int id;
+
+}
+
+interface RobotNervousSystem {
+	void ObjectDetected(ActiveState state);
+	void ObjectIsGone();
+}

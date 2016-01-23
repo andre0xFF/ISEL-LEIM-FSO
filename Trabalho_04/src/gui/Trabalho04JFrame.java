@@ -63,7 +63,7 @@ public class Trabalho04JFrame extends JFrame {
 	private MyRobotLego robotLego;
 	
 	void initVariables() {
-		robotName = "Link";
+		robotName = "FSO1";
 		offsetLeft = 0;
 		offsetRight = 0;
 		radius = 0;
@@ -75,7 +75,7 @@ public class Trabalho04JFrame extends JFrame {
 		evitarObs = false;
 		fugir = false;
 		
-		robotLego = new MyRobotLego(txtRobot, false);
+		robotLego = new MyRobotLego(txtRobot, true);
 	}
 	
 	void updateGuiComponents() {

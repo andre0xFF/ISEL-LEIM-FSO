@@ -1,0 +1,36 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+public class BackScanner extends Scanner {
+	public static final int ID = 1;
+	
+	private MyRobotLego robot;
+	private int[] range = new int[2];
+
+	public BackScanner(StateMachine machine, int id, int port) {
+		super(machine, id, port);
+	}
+
+	@Override
+	protected void objectDetected() {
+		for(RobotNervousSystem listener : listeners)  listener.ObjectDetected(new Escape(range));	
+	}
+
+	@Override
+	protected void objectIsGone() {
+		for(RobotNervousSystem listener : listeners)  listener.ObjectIsGone();	
+	}
+
+	@Override
+	protected void setPort(int port) { robot.SetSensorLowspeed(port); }
+
+	@Override
+	public int scan() { return robot.SensorUS(port); }
+	
+	@Override
+	public void run() { 
+		
+	}
+
+}

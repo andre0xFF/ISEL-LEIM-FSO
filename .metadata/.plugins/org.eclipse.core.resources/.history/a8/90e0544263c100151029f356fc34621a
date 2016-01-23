@@ -1,0 +1,52 @@
+package robot.states;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import robot.MyRobotLego;
+
+public abstract class Scanner extends Thread {
+	public final static int DEFAULT_DELAY = 500;
+	
+	protected final MyRobotLego robot;
+	protected final int id;
+	protected final int port;
+	
+	protected boolean active = true;
+	protected int delay = DEFAULT_DELAY;
+	protected List<RobotNervousSystem> listeners = new ArrayList<RobotNervousSystem>();
+	
+	public int getDelay() { return this.delay; }
+	
+	public void setDelay(int delay) { this.delay = delay; }
+	
+	public boolean isActive() { return this.active; }
+	
+	public void deactivate() { this.active = false; }
+	
+	public int getPort() { return this.port; }
+	
+	protected void addListener(RobotNervousSystem toAdd) { this.listeners.add(toAdd); }
+	
+	protected abstract void objectDetected();
+	protected abstract void objectIsGone();
+	protected abstract void setPort(int port);
+	public abstract int scan();
+	
+	public Scanner(StateMachine machine, int id, int port) {
+		this.robot = machine.getRobot();
+		this.id = id;
+		setPort(port);
+		this.port = port;
+		this.addListener(machine);
+		this.start();
+	}
+	public void run() {		
+		if(!active) this.interrupt();
+	}
+}
+
+interface RobotNervousSystem {
+	void ObjectDetected(ActiveState state);
+	void ObjectIsGone();
+}

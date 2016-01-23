@@ -9,7 +9,10 @@ public class MyRobotLego implements RobotNervousSystem {
 	
 	private final static int FRONT_SCANNER_PORT = RobotLego.S_2;
 	private final static int BACK_SCANNER_PORT = RobotLego.S_1;
+	private final static int DEFAULT_AVERAGE_SPEED = 3;
+	
 	private final boolean liveMode;
+	private final int speed = DEFAULT_AVERAGE_SPEED;
 	
 	private RobotLego robot;
 	
@@ -28,11 +31,7 @@ public class MyRobotLego implements RobotNervousSystem {
 	}
 
 	public boolean OpenNXT(String name) {
-		l.setText("Connection is open");
-
-		if (liveMode) robot.OpenNXT(name);
-
-		return true;
+		return liveMode ? robot.OpenNXT(name) : true;
 	}
 
 	public boolean CloseNXT() {
@@ -104,6 +103,7 @@ public class MyRobotLego implements RobotNervousSystem {
 		if(roam == null || (roam != null && !roam.isActive())) roam = new Roam(this);
 		else roam.deactivate();
 	}
+	
 	@Override
 	public void escape(int minDistance, int maxDistance) { 
 		if(bScanner == null || (bScanner != null && !bScanner.isActive())) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
@@ -112,6 +112,7 @@ public class MyRobotLego implements RobotNervousSystem {
 			if(escape != null) escape.deactivate();
 		}
 	}
+	
 	@Override
 	public void avoid() {
 		if(fScanner == null || (fScanner != null && !fScanner.isActive())) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
@@ -146,7 +147,8 @@ public class MyRobotLego implements RobotNervousSystem {
 	@Override
 	public void frontObjectIsGone() {
 		avoid = null;
-		if(roam != null && roam.isPaused()) roam.unpause();	
+		if(roam != null && roam.isPaused()) roam.unpause();
+		if(bScanner != null && bScanner.isPaused()) bScanner.unpause();
 	}
 
 	@Override

@@ -49,10 +49,8 @@ public abstract class Behaviour extends Thread {
 		if(!active) this.interrupt();
 	}
 	
-	public static int calculateDelay(int distance, int radius, int angle) {
-		// TODO : calculate delays
-//		if(radius == 0 && angle == 0) return (distance / DEFAULT_AVERAGE_SPEED) * 1000;
-		if(distance == 0 && radius > 0 && angle > 0) return (radius * angle) + 100;
+	public static int calculateDelay(int distance, int radius, int angle, int realSpeed) {
+		if(distance == 0 && radius > 0 && angle > 0) return (radius * angle) / realSpeed;
 		
 		if(distance > 0) return (1100 * distance) / 20;
 		

@@ -1,0 +1,60 @@
+package robot.states;
+
+public class StateMachine implements RobotNervousSystem{
+	public final static int MAX_SCANNERS = 2;
+	
+	private State activeState;
+	private State passiveState;
+	private Scanner[] scanners = new Scanner[MAX_SCANNERS];
+	
+	public State getActiveState() { return this.activeState; }
+	private void setActiveState(State newState) { this.activeState = newState; }
+	
+	public State getPassiveState() { return this.passiveState; }
+	public void setPassiveState(State newState) { this.passiveState = newState; }
+	
+	public Scanner[] getScanners() { return this.scanners; }
+	
+	public int numberOfActiveScanners() {
+		int i = 0;
+		for(Scanner scanner : scanners)  i = (scanner != null) ? i++ : i;
+		
+		return i;
+	}
+	public boolean addScanner(Scanner newScanner) {
+		int nScanners = numberOfActiveScanners();
+		if(scanners.length == nScanners) return false;
+		
+		scanners[nScanners] = newScanner;
+		
+		return true;
+	}
+	public void rmScanner(Scanner rmScanner) {
+		// TODO
+	}
+	@Override
+	public void ObjectDetected(int distance) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void ObjectIsGone() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void roam() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void escape(int minDistance, int maxDistance) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void avoid() {
+		// TODO Auto-generated method stub
+		
+	}
+}
