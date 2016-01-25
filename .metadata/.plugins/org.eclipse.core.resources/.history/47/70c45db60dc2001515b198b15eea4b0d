@@ -1,9 +1,0 @@
-package robot.states;
-
-public final class FrontScanner {
-
-	public FrontScanner() {
-		// TODO Auto-generated constructor stub
-	}
-
-}
