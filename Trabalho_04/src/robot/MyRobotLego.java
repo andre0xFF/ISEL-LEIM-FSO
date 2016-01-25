@@ -1,159 +1,142 @@
 package robot;
 
-import javax.swing.JTextField;
 import RobotLego.RobotLego;
-import robot.automate.*;
+import robot.states.BackScanner;
+import robot.states.FrontScanner;
+import robot.states.Roam;
+import robot.states.StateMachine;
 
-public class MyRobotLego implements RobotNervousSystem {
-	private final JTextField l;
+public class MyRobotLego {
+	public final static boolean LIVE_MODE = false;
+	public final static int FRONT_SCANNER_PORT = RobotLego.S_2;
+	public final static int BACK_SCANNER_PORT = RobotLego.S_1;
+	public final static int DEFAULT_AVERAGE_SPEED = 25;										// cm/s
 	
-	private final static int FRONT_SCANNER_PORT = RobotLego.S_2;
-	private final static int BACK_SCANNER_PORT = RobotLego.S_1;
-	private final static int DEFAULT_AVERAGE_SPEED = 3;
-	
-	private final boolean liveMode;
-	private final int speed = DEFAULT_AVERAGE_SPEED;
+	private int realSpeed = DEFAULT_AVERAGE_SPEED;
 	
 	private RobotLego robot;
 	
-	private BackScanner bScanner;
-	private FrontScanner fScanner;
-	private Roam roam;
-	private Escape escape;
-	private Avoid avoid;
+	private final StateMachine stateMachine = new StateMachine(this);
+	
+	public int getSpeed() { return this.realSpeed; }
 
-
-	public MyRobotLego(JTextField l, boolean liveMode) {
-		this.l = l;
-		this.liveMode = liveMode;
-
-		if(liveMode) robot = new RobotLego();
+	public MyRobotLego() {
+		if(LIVE_MODE) robot = new RobotLego();
 	}
 
 	public boolean OpenNXT(String name) {
-		return liveMode ? robot.OpenNXT(name) : true;
+		return LIVE_MODE ? robot.OpenNXT(name) : true;
 	}
 
 	public boolean CloseNXT() {
-		l.setText("Connection is closed");
+		System.out.println("Connection is closed");
 
-		if (liveMode) robot.CloseNXT();
+		if (LIVE_MODE) {
+			robot.Parar(true);
+			robot.CloseNXT();
+		}
 		
 		return true;
 	}
 
 	public void Reta(int units) {
-		l.setText("Moving forward " + units + " units");
+		System.out.println("Moving forward " + units + " units");
 
-		if (liveMode) robot.Reta(units);
+		if (LIVE_MODE) robot.Reta(units);
 	}
 
 	public void CurvarDireita(int radius, int angle) {
-		l.setText("Turning left " + radius + " radius " + angle + " angle");
+		System.out.println("Turning left " + radius + " radius " + angle + " angle");
 
-		if (liveMode) robot.CurvarDireita(radius, angle);
+		if (LIVE_MODE) robot.CurvarDireita(radius, angle);
 	}
 
 	public void CurvarEsquerda(int radius, int angle) {
-		l.setText("Turning right " + radius + " radius " + angle + " angle");
+		System.out.println("Turning right " + radius + " radius " + angle + " angle");
 
-		if (liveMode) robot.CurvarEsquerda(radius, angle);
+		if (LIVE_MODE) robot.CurvarEsquerda(radius, angle);
 	}
 
 	public void AjustarVMD(int offset) {
-		if (liveMode) robot.AjustarVMD(offset);
+		if (LIVE_MODE) robot.AjustarVMD(offset);
 	}
 
 	public void AjustarVME(int offset) {
-		if (liveMode) robot.AjustarVME(offset);
+		if (LIVE_MODE) robot.AjustarVME(offset);
 	}
 
 	public void Parar(boolean trueStop) {
-		l.setText("Robot stop");
+		System.out.println("Robot stop");
 
-		if (liveMode) robot.Parar(trueStop);
+		if (LIVE_MODE) robot.Parar(trueStop);
 	}
 	
 	public void SetSpeed(int speed) {
-		if (liveMode) robot.SetSpeed(speed);
+		if (LIVE_MODE) robot.SetSpeed(speed);
 	}
 	
 	public void SetSensorLowspeed(int port) {
-		if (liveMode) robot.SetSensorLowspeed(port);
+		if (LIVE_MODE) robot.SetSensorLowspeed(port);
 	}
 	
 	public int SensorUS(int port) {
-		if (liveMode) return robot.SensorUS(port);
+		if (LIVE_MODE) return robot.SensorUS(port);
 		
-		return 0;
+		return 10;
 	}
 	
 	public void SetSensorTouch(int port) {
-		if (liveMode) robot.SetSensorTouch(port);
+		if (LIVE_MODE) robot.SetSensorTouch(port);
 	}
 	
 	public int Sensor(int port) {
-		if (liveMode) return robot.Sensor(port);
+		if (LIVE_MODE) return robot.Sensor(port);
 		
 		return 0;
 	}
 	
-	@Override
+
 	public void roam() {
-		if(roam == null || (roam != null && !roam.isActive())) roam = new Roam(this);
-		else roam.deactivate();
+		if(stateMachine.getPassiveState() != Roam.ID) { stateMachine.setPassiveState(new Roam(this)); }
+		else { stateMachine.deactivatePassiveState(); }
 	}
 	
-	@Override
 	public void escape(int minDistance, int maxDistance) { 
-		if(bScanner == null || (bScanner != null && !bScanner.isActive())) bScanner = new BackScanner(this, BACK_SCANNER_PORT, minDistance, maxDistance);
-		else {
-			bScanner.deactivate();
-			if(escape != null) escape.deactivate();
-		}
+		stateMachine.addScanner(new BackScanner(stateMachine, BACK_SCANNER_PORT, new int[]{ minDistance, maxDistance }));
+		
+		// TODO:
+		// toggle
+		// if escape deactivate escape
+		stateMachine.deactivateActiveState();
 	}
 	
-	@Override
+	public void TestActiveState(int weight) {
+		stateMachine.setActiveState(new robot.states.ActiveStateTester(this, null, weight));
+	}
+	
+	public void TestPassiveState() {
+		stateMachine.setPassiveState(new robot.states.PassiveStateTester(this, 0));
+	}
+	
 	public void avoid() {
-		if(fScanner == null || (fScanner != null && !fScanner.isActive())) fScanner = new FrontScanner(this, FRONT_SCANNER_PORT);
-		else {
-			fScanner.deactivate();
-			if(avoid != null) avoid.deactivate();
-		}
+		// TODO:
+		// toggle
+		// if avoid deactivate avoid
 		
+		stateMachine.addScanner(new FrontScanner(stateMachine, FRONT_SCANNER_PORT));	
 	}
 
-	public static void sleep(int ms) {	  
+	public static void sleep(int ms) { 
 		try { Thread.sleep(ms); }
 		catch (InterruptedException e) { }
 	}
 
-	@Override
-	public void frontObjectDetected(int distance) {
-		if(roam != null && roam.isActive()) roam.pause();
-		if(escape != null && escape.isActive()) escape.deactivate();
-		if(bScanner != null && bScanner.isActive()) bScanner.pause();
-		
-		avoid = new Avoid(this, fScanner);
+	public static int calculateMovementDelay(int speed, int distance) {
+		return (int)(distance / speed) * 1000;
 	}
 
-	@Override
-	public void rearObjectDetected(int distance) {
-		if(roam != null && roam.isActive()) roam.pause();
-		
-		escape = new Escape(this, bScanner);	
-	}
-	
-	@Override
-	public void frontObjectIsGone() {
-		avoid = null;
-		if(roam != null && roam.isPaused()) roam.unpause();
-		if(bScanner != null && bScanner.isPaused()) bScanner.unpause();
-	}
-
-	@Override
-	public void rearObjectIsGone() {
-		escape = null;
-		if(roam != null && roam.isPaused()) roam.unpause();	
+	public static int calculateMovementDelay(int speed, int radius, int angle) {
+		double radians = (angle * 2 * Math.PI) / 360;
+		return (int)((radius * radians) / speed) * 1000;
 	}
 }

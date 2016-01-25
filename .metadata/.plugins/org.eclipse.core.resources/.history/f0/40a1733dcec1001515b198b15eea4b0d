@@ -1,0 +1,150 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+/**
+ * A state to be used by the Robot
+ * @author affonseca
+ *
+ */
+public abstract class State extends Thread 
+{
+	protected final MyRobotLego robot;
+
+	/* State related variables, gets and sets */
+	public final static int DEFAULT_DELAY = 500;
+	protected int delay = DEFAULT_DELAY;													// How much time (ms) the state sleeps between each action
+	protected boolean active = true;
+	
+	public int getDelay() { return this.delay; }
+	public void setDelay(int delay) { this.delay = delay; }
+	public boolean isActive() { return this.active; }
+	public void deactivate() { this.active = false; }
+	
+	/* Methods to be implemented by each final state */
+	public abstract void action();															// Action to be performed by the state
+	
+	public State(MyRobotLego robot) {
+		this.robot = robot;
+		this.start();
+	}
+	
+	@Override
+	public void run() {		
+		if(!active) this.interrupt();
+	}
+	
+}
+
+/**
+ * An active state:
+ * * is never paused
+ * * runs while a condition is true
+ * * have priorities (weight)
+ * @author affonseca
+ *
+ */
+abstract class ActiveState extends State 
+{
+	/* Priority to each other ActiveState */
+	protected int weight = 0;
+	
+	public int getWeight() { return this.weight; }
+
+	public ActiveState(MyRobotLego robot, Scanner scanner) {
+		super(robot);
+	}
+	
+	public void run() {
+		super.run();
+		
+		try { Thread.sleep(delay); }
+		catch (InterruptedException e) { }
+	}
+}
+
+/**
+ * A passive state:
+ * * runs when there's no active state
+ * * can be paused
+ * * have no priority
+ * @author affonseca
+ *
+ */
+abstract class PassiveState extends State 
+{
+	protected boolean pause = false;
+	
+	public boolean isPaused() { return this.pause; }	
+	public void pause() { this.pause = true; }
+	
+	public void unpause() {
+		synchronized(robot) {
+			this.pause = false;
+			robot.notify();
+		}
+	}
+	
+	public PassiveState(MyRobotLego robot) {
+		super(robot);
+	}
+	
+	public void run() {
+		super.run();
+		
+		if(active && pause) {
+			synchronized(robot) {
+				try { robot.wait(); }
+				catch (InterruptedException e) { }
+			}
+		}
+		
+		try { Thread.sleep(delay); } 
+		catch (InterruptedException e) { }
+	}
+}
+
+class Roam extends PassiveState {
+
+	public Roam(MyRobotLego robot) {
+		super(robot);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}
+
+class Escape extends ActiveState {
+
+	public Escape(MyRobotLego robot, Scanner scanner) {
+		super(robot, scanner);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}
+
+class Avoid extends ActiveState {
+
+	public Avoid(MyRobotLego robot, Scanner scanner) {
+		super(robot, scanner);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+}

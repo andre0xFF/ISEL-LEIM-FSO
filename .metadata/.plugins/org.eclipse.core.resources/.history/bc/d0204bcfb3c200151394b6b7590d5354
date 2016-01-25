@@ -1,0 +1,33 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+/**
+ * An active state:
+ * * is never paused
+ * * runs while a condition is true
+ * * have priorities (weight)
+ * * needs a scanner to support the desired action
+ * @author affonseca
+ *
+ */
+public abstract class ActiveState extends State 
+{
+	protected final Scanner scanner;
+	/* Priority to each other ActiveState */
+	protected int weight = 0;
+	
+	public int getWeight() { return this.weight; }
+
+	public ActiveState(MyRobotLego robot, Scanner scanner) {
+		super(robot);
+		this.scanner = scanner;
+	}
+	
+	public void run() {
+		super.run();
+		
+		try { Thread.sleep(delay); }
+		catch (InterruptedException e) { }
+	}
+}

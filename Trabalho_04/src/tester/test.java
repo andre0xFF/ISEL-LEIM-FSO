@@ -1,45 +1,102 @@
 package tester;
 
-import javax.swing.JTextField;
-import robot.BackScanner;
-import robot.FrontScanner;
+import java.util.concurrent.TimeUnit;
+
 import robot.MyRobotLego;
-import robot.automate.Avoid;
-import robot.automate.Roam;
 
-public class test {
-
+public class test 
+{
 	public static void main(String[] args) throws InterruptedException {
-		testSensors();
+		MyRobotLego robot = new MyRobotLego();
+		robot = connectWithRobot(robot);
+		
+		testStates(robot);
+		
+		robot = disconnectFromRobot(robot);
 	}
 	
-	public static void testBehaviours() throws InterruptedException {
-		MyRobotLego robot = new MyRobotLego(new JTextField(), false);
-		Roam r = new Roam(robot);
-		Thread.sleep(3000);
-		new Avoid(robot, new FrontScanner(robot, 0));
-		Thread.sleep(2000);
-		System.out.println("avoid");
-		r.pause();
-		Thread.sleep(6000);
-		r.unpause();
+	public static void testStates(MyRobotLego robot) {
+		robot.TestPassiveState();
+		
+		try { Thread.sleep(2000); } 
+		catch (InterruptedException e) { }
+		
+		robot.TestActiveState(2);
+		
+		try { Thread.sleep(2000); } 
+		catch (InterruptedException e) { }
+		
+		robot.TestActiveState(1);
+		
+		try { Thread.sleep(2000); } 
+		catch (InterruptedException e) { }
+		
+		robot.TestActiveState(3);
 	}
 	
-	public static void testSensors() throws InterruptedException {
-		System.out.println("1");
-		BackScanner t = new BackScanner(new MyRobotLego(new JTextField(), false), 0);
-		t.pause();
-		new FrontScanner(new MyRobotLego(new JTextField(), false), 0);
-		Thread.sleep(3500);
+	public static MyRobotLego connectWithRobot(MyRobotLego robot) throws InterruptedException {
+		if(MyRobotLego.LIVE_MODE) { 
+			robot.OpenNXT("FSO1");
+			Thread.sleep(10000); 
+		}
 		
-		System.out.println("2");
-		t.setDelay(250);
-		t.unpause();
-		Thread.sleep(3500);
+		System.out.println("GO!");
+		return robot;
+	}
+	
+	public static MyRobotLego disconnectFromRobot(MyRobotLego robot) throws InterruptedException {
+		Thread.sleep(1000);
 		
-		System.out.println("3");
-		t.deactivate();
-		Thread.sleep(3500);
+		if(MyRobotLego.LIVE_MODE) { 
+			robot.CloseNXT();
+		}
+		
+		return robot;
+	}
+	
+	public static void backScannerTest(MyRobotLego robot) throws InterruptedException {
+		robot.SetSensorLowspeed(0);
+		for(int i = 0; i < 60; i++) {
+			System.out.println(i + " " + robot.SensorUS(0));
+			Thread.sleep(50);
+		}
+	}
+	
+	public static void escapeTest(MyRobotLego robot) throws InterruptedException {		
+		robot.escape(1, 100);		
+		Thread.sleep(10 * 60 * 1000);
+	}
+	
+	public static void roamTest(MyRobotLego robot) throws InterruptedException {	
+		robot.roam();
+		Thread.sleep(10000);
+		robot.roam();
+	}
+	
+	public static void calculateSpeed(MyRobotLego robot) throws InterruptedException {
+		robot.SetSensorLowspeed(MyRobotLego.BACK_SCANNER_PORT);
+		int initialDistance = robot.SensorUS(MyRobotLego.BACK_SCANNER_PORT);
+		int finalDistance = initialDistance;
+		long initialTime = System.nanoTime();
+			
+		robot.SetSpeed(50);
+		robot.AjustarVME(4);
+		robot.AjustarVMD(0);
+		
+		robot.Reta(100);
+		robot.Parar(false);
+		
+		while((finalDistance - initialDistance) <= 100) {
+			Thread.sleep(50);
+			finalDistance = robot.SensorUS(MyRobotLego.BACK_SCANNER_PORT);
+			System.out.print((finalDistance - initialDistance) + " ");
+		}
+		
+		long finalTime = System.nanoTime();
+		
+		System.out.println("");
+		System.out.println("Travelled distance: " + (finalDistance - initialDistance));
+		System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toSeconds((finalTime - initialTime)));
 	}
 
 }

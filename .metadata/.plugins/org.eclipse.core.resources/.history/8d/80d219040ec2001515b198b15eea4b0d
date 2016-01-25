@@ -1,0 +1,127 @@
+package robot;
+
+import javax.swing.JTextField;
+import RobotLego.RobotLego;
+import robot.states.Roam;
+import robot.states.Scanner;
+import robot.states.StateMachine;
+
+public class MyRobotLego {
+	private final JTextField l;
+	
+	private final static int FRONT_SCANNER_PORT = RobotLego.S_2;
+	private final static int BACK_SCANNER_PORT = RobotLego.S_1;
+	private final static int DEFAULT_AVERAGE_SPEED = 3;
+	
+	private final boolean liveMode;
+	private int realSpeed = DEFAULT_AVERAGE_SPEED;
+	
+	private RobotLego robot;
+	
+	private final StateMachine stateMachine = new StateMachine();
+
+
+	public MyRobotLego(JTextField l, boolean liveMode) {
+		this.l = l;
+		this.liveMode = liveMode;
+
+		if(liveMode) robot = new RobotLego();
+	}
+
+	public boolean OpenNXT(String name) {
+		return liveMode ? robot.OpenNXT(name) : true;
+	}
+
+	public boolean CloseNXT() {
+		l.setText("Connection is closed");
+
+		if (liveMode) robot.CloseNXT();
+		
+		return true;
+	}
+
+	public void Reta(int units) {
+		l.setText("Moving forward " + units + " units");
+
+		if (liveMode) robot.Reta(units);
+	}
+
+	public void CurvarDireita(int radius, int angle) {
+		l.setText("Turning left " + radius + " radius " + angle + " angle");
+
+		if (liveMode) robot.CurvarDireita(radius, angle);
+	}
+
+	public void CurvarEsquerda(int radius, int angle) {
+		l.setText("Turning right " + radius + " radius " + angle + " angle");
+
+		if (liveMode) robot.CurvarEsquerda(radius, angle);
+	}
+
+	public void AjustarVMD(int offset) {
+		if (liveMode) robot.AjustarVMD(offset);
+	}
+
+	public void AjustarVME(int offset) {
+		if (liveMode) robot.AjustarVME(offset);
+	}
+
+	public void Parar(boolean trueStop) {
+		l.setText("Robot stop");
+
+		if (liveMode) robot.Parar(trueStop);
+	}
+	
+	public void SetSpeed(int speed) {
+		if (liveMode) robot.SetSpeed(speed);
+	}
+	
+	public void SetSensorLowspeed(int port) {
+		if (liveMode) robot.SetSensorLowspeed(port);
+	}
+	
+	public int SensorUS(int port) {
+		if (liveMode) return robot.SensorUS(port);
+		
+		return 0;
+	}
+	
+	public void SetSensorTouch(int port) {
+		if (liveMode) robot.SetSensorTouch(port);
+	}
+	
+	public int Sensor(int port) {
+		if (liveMode) return robot.Sensor(port);
+		
+		return 0;
+	}
+	
+
+	public void roam() {
+		stateMachine.setPassiveState(new Roam(this));
+	}
+	
+	public void escape(int minDistance, int maxDistance) { 
+		stateMachine.addScanner(new BackScanner(stateMachine, ));
+	}
+	
+	public void avoid() {
+		stateMachine.addScanner(new FrontScanner(this));
+		
+	}
+
+	public static void sleep(int ms) {	  
+		try { Thread.sleep(ms); }
+		catch (InterruptedException e) { }
+	}
+
+
+
+	public static int calculateMovementDelay(int order, int distance) {
+		return 0;
+	}
+
+	public static int calculateMovementDelay(int order, int radius, int angle) {
+		return 0;
+	}
+}

@@ -1,0 +1,21 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+public final class Escape extends ActiveState {
+	private final BackScanner scanner;
+	int[] range = new int[2];																			// Robot's safe distance from the detected object
+	
+	public Escape(MyRobotLego robot, BackScanner scanner, int[] range) {
+		super(robot, scanner);
+		this.scanner = scanner;
+		this.range = range;
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

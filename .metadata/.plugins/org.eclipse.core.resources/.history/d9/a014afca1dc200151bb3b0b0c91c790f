@@ -1,0 +1,44 @@
+package tester;
+
+import java.util.concurrent.TimeUnit;
+
+import robot.MyRobotLego;
+
+public class test 
+{
+	public static void main(String[] args) throws InterruptedException {
+		MyRobotLego robot = new MyRobotLego();
+		
+		robot.OpenNXT("FSO1");
+		
+		Thread.sleep(10000);
+		
+		robot.SetSensorLowspeed(MyRobotLego.BACK_SCANNER_PORT);
+		int initialDistance = robot.SensorUS(MyRobotLego.BACK_SCANNER_PORT);
+		int finalDistance = initialDistance;
+		long initialTime = System.nanoTime();
+		
+		
+		robot.SetSpeed(50);
+		robot.AjustarVME(5);
+		robot.AjustarVMD(0);
+		
+		robot.Reta(100);
+		robot.Parar(false);
+		
+		while((finalDistance - initialDistance) < 100) {
+			Thread.sleep(50);
+			finalDistance = robot.SensorUS(MyRobotLego.BACK_SCANNER_PORT);
+			System.out.print((finalDistance - initialDistance) + " ");
+		}
+		
+		long finalTime = System.nanoTime();
+		
+		System.out.println("");
+		System.out.println("Travelled distance: " + (finalDistance - initialDistance));
+		System.out.println("Elapsed time: " + TimeUnit.NANOSECONDS.toSeconds((finalTime - initialTime)));
+		
+		robot.CloseNXT();
+	}
+
+}

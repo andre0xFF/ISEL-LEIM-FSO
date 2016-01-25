@@ -1,0 +1,15 @@
+package tester;
+
+import robot.MyRobotLego;
+
+public class test {
+
+	public static void main(String[] args) throws InterruptedException {
+		MyRobotLego robot = new MyRobotLego(false);
+		robot.roam();
+		
+		Thread.sleep(2000);
+		robot.roam();
+	}
+
+}

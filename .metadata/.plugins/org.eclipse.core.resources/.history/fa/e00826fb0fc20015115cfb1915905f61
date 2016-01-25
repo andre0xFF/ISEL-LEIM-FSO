@@ -1,0 +1,14 @@
+package tester;
+
+import javax.swing.JTextField;
+import robot.MyRobotLego;
+
+
+public class test {
+
+	public static void main(String[] args) throws InterruptedException {
+		MyRobotLego robot = new MyRobotLego(false);
+		robot.roam();
+	}
+
+}

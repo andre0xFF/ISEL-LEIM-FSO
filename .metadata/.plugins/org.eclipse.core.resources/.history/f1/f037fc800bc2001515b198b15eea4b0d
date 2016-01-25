@@ -1,0 +1,20 @@
+package robot.states;
+
+import robot.FrontScanner;
+import robot.MyRobotLego;
+
+public final class Avoid extends ActiveState {
+	private final FrontScanner scanner;
+	
+	public Avoid(MyRobotLego robot, FrontScanner scanner) {
+		super(robot, scanner);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+
+	}
+
+}

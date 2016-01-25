@@ -1,0 +1,16 @@
+package tester;
+
+import robot.MyRobotLego;
+
+public class test 
+{
+	public static void main(String[] args) throws InterruptedException {
+		MyRobotLego robot = new MyRobotLego();
+		
+		robot.SetSensorLowspeed(MyRobotLego.BACK_SCANNER_PORT);
+		int initialDistance = robot.Sensor(MyRobotLego.BACK_SCANNER_PORT);
+		
+		robot.Reta(100);
+	}
+
+}

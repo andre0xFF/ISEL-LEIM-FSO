@@ -1,0 +1,47 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+public final class Escape extends ActiveState {
+	/* Robot relative speeds */
+	public final static int MIN_SPEED = 30;
+	public final static int MAX_SPEED = 100;
+	
+	private final BackScanner scanner;
+	int[] range = new int[2];																			// Robot's safe distance from the detected object
+	int objectDistance;
+	
+	public Escape(MyRobotLego robot, BackScanner scanner, int[] range) {
+		super(robot, scanner);
+		this.scanner = scanner;
+		this.objectDistance = scanner.scan();
+		this.range = range;
+	}
+	
+	@Override
+	public void run() {
+		while(objectDistance > range[0] && objectDistance < range[1]) {
+			synchronized(robot) {
+				action();
+				MyRobotLego.sleep(getDelay());
+			}
+			objectDistance = scanner.scan();
+		}
+		
+		robot.Parar(false);
+		this.interrupt();
+	}
+
+	@Override
+	public void action() {						
+		int relativeDistance = objectDistance - range[0];
+		
+		int speed = MAX_SPEED - (relativeDistance * 100 / range[1]);
+		
+		if(speed < MIN_SPEED) speed += MIN_SPEED - speed;
+		
+		robot.SetSpeed(speed);
+		robot.Reta(range[1] - objectDistance);
+	}
+
+}

@@ -75,7 +75,7 @@ public class Trabalho04JFrame extends JFrame {
 		evitarObs = false;
 		fugir = false;
 		
-		robotLego = new MyRobotLego(txtRobot, true);
+		robotLego = new MyRobotLego();
 	}
 	
 	void updateGuiComponents() {

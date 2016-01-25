@@ -1,0 +1,44 @@
+package robot.states;
+
+import java.util.Random;
+
+import robot.MyRobotLego;
+
+public final class Roam extends PassiveState 
+{
+	private final static int DEFAULT_DISTANCE = 10;
+	private final static int DEFAULT_RADIUS = 90;
+	private final static int DEFAULT_ANGLE = 0;
+	
+	private int lastOrder = 0;																// last generated order
+	
+	public Roam(MyRobotLego robot) {
+		super(robot);
+	}
+	
+	@Override
+	public void run() {
+		while(active) {
+			super.run();
+				action();
+		}
+		
+		robot.Parar(false);
+	}
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public static int randomOrder(int min, int max, int previous) {
+		Random r = new Random();
+		int i = r.nextInt(max) + min;
+		
+		if(i == previous) i = randomOrder(min, max, previous);
+		
+		return i;
+	}
+
+}

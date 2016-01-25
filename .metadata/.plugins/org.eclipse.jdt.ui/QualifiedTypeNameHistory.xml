@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<qualifiedTypeNameHistroy/>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="robot.states.ActiveState"/>
+<fullyQualifiedTypeName name="robot.states.Escape"/>
+<fullyQualifiedTypeName name="robot.states.StateMachine"/>
+<fullyQualifiedTypeName name="robot.states.Roam"/>
+<fullyQualifiedTypeName name="robot.states.Scanner"/>
+<fullyQualifiedTypeName name="robot.states.BackScanner"/>
+<fullyQualifiedTypeName name="robot.states.FrontScanner"/>
+<fullyQualifiedTypeName name="robot.MyRobotLego"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="java.lang.System"/>
+</qualifiedTypeNameHistroy>

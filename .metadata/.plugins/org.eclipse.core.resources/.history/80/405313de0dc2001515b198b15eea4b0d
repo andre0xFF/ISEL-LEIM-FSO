@@ -1,0 +1,9 @@
+package robot.states;
+
+public final class BackScanner {
+
+	public BackScanner() {
+		// TODO Auto-generated constructor stub
+	}
+
+}

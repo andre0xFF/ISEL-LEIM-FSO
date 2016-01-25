@@ -1,0 +1,30 @@
+package robot.states;
+
+import robot.MyRobotLego;
+
+public final class Avoid extends ActiveState {
+	
+	public Avoid(MyRobotLego robot, FrontScanner scanner) {
+		super(robot, scanner);
+	}
+	
+	@Override
+	public void run() {
+		while(scanner.scan() > 0) {
+			synchronized(robot) {
+				action();
+				MyRobotLego.sleep(getDelay());
+			}
+		}
+		
+		robot.Parar(false);
+		this.interrupt();	
+	}
+
+	@Override
+	public void action() {
+
+
+	}
+
+}

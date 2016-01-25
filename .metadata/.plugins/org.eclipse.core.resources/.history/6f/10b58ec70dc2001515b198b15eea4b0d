@@ -1,0 +1,9 @@
+package robot.states;
+
+public final class FrontScanner extends Scanner {
+
+	public FrontScanner() {
+		// TODO Auto-generated constructor stub
+	}
+
+}
