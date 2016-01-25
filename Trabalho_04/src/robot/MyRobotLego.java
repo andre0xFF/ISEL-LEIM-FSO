@@ -16,7 +16,7 @@ public class MyRobotLego {
 	
 	private RobotLego robot;
 	
-	private final StateMachine stateMachine = new StateMachine(this);
+	protected final StateMachine stateMachine = new StateMachine(this);
 	
 	public int getSpeed() { return this.realSpeed; }
 
@@ -108,14 +108,6 @@ public class MyRobotLego {
 		// toggle
 		// if escape deactivate escape
 		stateMachine.deactivateActiveState();
-	}
-	
-	public void TestActiveState(int weight) {
-		stateMachine.setActiveState(new robot.states.ActiveStateTester(this, null, weight));
-	}
-	
-	public void TestPassiveState() {
-		stateMachine.setPassiveState(new robot.states.PassiveStateTester(this, 0));
 	}
 	
 	public void avoid() {

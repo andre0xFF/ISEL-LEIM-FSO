@@ -1,6 +1,8 @@
-package robot.states;
+package tester;
 
 import robot.MyRobotLego;
+import robot.states.ActiveState;
+import robot.states.Scanner;
 
 public final class ActiveStateTester extends ActiveState {
 

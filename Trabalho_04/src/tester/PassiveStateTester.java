@@ -1,6 +1,7 @@
-package robot.states;
+package tester;
 
 import robot.MyRobotLego;
+import robot.states.PassiveState;
 
 public final class PassiveStateTester extends PassiveState {
 

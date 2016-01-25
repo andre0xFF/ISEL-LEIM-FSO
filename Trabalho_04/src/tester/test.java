@@ -7,7 +7,7 @@ import robot.MyRobotLego;
 public class test 
 {
 	public static void main(String[] args) throws InterruptedException {
-		MyRobotLego robot = new MyRobotLego();
+		MyRobotLegoTester robot = new MyRobotLegoTester();
 		robot = connectWithRobot(robot);
 		
 		testStates(robot);
@@ -15,7 +15,7 @@ public class test
 		robot = disconnectFromRobot(robot);
 	}
 	
-	public static void testStates(MyRobotLego robot) {
+	public static void testStates(MyRobotLegoTester robot) {
 		robot.TestPassiveState();
 		
 		try { Thread.sleep(2000); } 
@@ -34,7 +34,7 @@ public class test
 		robot.TestActiveState(3);
 	}
 	
-	public static MyRobotLego connectWithRobot(MyRobotLego robot) throws InterruptedException {
+	public static MyRobotLegoTester connectWithRobot(MyRobotLegoTester robot) throws InterruptedException {
 		if(MyRobotLego.LIVE_MODE) { 
 			robot.OpenNXT("FSO1");
 			Thread.sleep(10000); 
@@ -44,7 +44,7 @@ public class test
 		return robot;
 	}
 	
-	public static MyRobotLego disconnectFromRobot(MyRobotLego robot) throws InterruptedException {
+	public static MyRobotLegoTester disconnectFromRobot(MyRobotLegoTester robot) throws InterruptedException {
 		Thread.sleep(1000);
 		
 		if(MyRobotLego.LIVE_MODE) { 
@@ -54,7 +54,7 @@ public class test
 		return robot;
 	}
 	
-	public static void backScannerTest(MyRobotLego robot) throws InterruptedException {
+	public static void backScannerTest(MyRobotLegoTester robot) throws InterruptedException {
 		robot.SetSensorLowspeed(0);
 		for(int i = 0; i < 60; i++) {
 			System.out.println(i + " " + robot.SensorUS(0));
@@ -62,18 +62,18 @@ public class test
 		}
 	}
 	
-	public static void escapeTest(MyRobotLego robot) throws InterruptedException {		
+	public static void escapeTest(MyRobotLegoTester robot) throws InterruptedException {		
 		robot.escape(1, 100);		
 		Thread.sleep(10 * 60 * 1000);
 	}
 	
-	public static void roamTest(MyRobotLego robot) throws InterruptedException {	
+	public static void roamTest(MyRobotLegoTester robot) throws InterruptedException {	
 		robot.roam();
 		Thread.sleep(10000);
 		robot.roam();
 	}
 	
-	public static void calculateSpeed(MyRobotLego robot) throws InterruptedException {
+	public static void calculateSpeed(MyRobotLegoTester robot) throws InterruptedException {
 		robot.SetSensorLowspeed(MyRobotLego.BACK_SCANNER_PORT);
 		int initialDistance = robot.SensorUS(MyRobotLego.BACK_SCANNER_PORT);
 		int finalDistance = initialDistance;
