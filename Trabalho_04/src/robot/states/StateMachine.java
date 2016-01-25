@@ -34,7 +34,7 @@ public class StateMachine implements RobotNervousSystem
 		activeState = newState;
 		activeState.execute();
 		
-		synchronized(robot) { 
+		synchronized(robot) {
 			robot.notifyAll();
 		}
 	}

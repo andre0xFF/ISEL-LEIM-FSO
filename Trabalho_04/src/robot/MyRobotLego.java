@@ -1,9 +1,9 @@
 package robot;
 
 import RobotLego.RobotLego;
-import robot.states.BackScanner;
-import robot.states.FrontScanner;
-import robot.states.Roam;
+import robot.passivestates.Roam;
+import robot.scanners.BackScanner;
+import robot.scanners.FrontScanner;
 import robot.states.StateMachine;
 
 public class MyRobotLego {

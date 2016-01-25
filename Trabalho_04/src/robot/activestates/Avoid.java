@@ -1,6 +1,8 @@
-package robot.states;
+package robot.activestates;
 
 import robot.MyRobotLego;
+import robot.scanners.FrontScanner;
+import robot.states.ActiveState;
 
 public final class Avoid extends ActiveState {
 	public static final int ID = 4;

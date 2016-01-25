@@ -1,8 +1,9 @@
-package robot.states;
+package robot.passivestates;
 
 import java.util.Random;
 
 import robot.MyRobotLego;
+import robot.states.PassiveState;
 
 public final class Roam extends PassiveState 
 {

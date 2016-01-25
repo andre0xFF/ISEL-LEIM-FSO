@@ -1,4 +1,9 @@
-package robot.states;
+package robot.scanners;
+
+import robot.activestates.Avoid;
+import robot.states.RobotNervousSystem;
+import robot.states.Scanner;
+import robot.states.StateMachine;
 
 public final class FrontScanner extends Scanner {
 
