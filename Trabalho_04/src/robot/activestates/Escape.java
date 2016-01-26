@@ -6,8 +6,9 @@ import robot.states.ActiveState;
 
 public final class Escape extends ActiveState {
 	public static final int ID = 5;
+	public static final int SCANNER_ID = BackScanner.ID;
 	
-	/* Robot relative speeds */
+	/* Robot speeds */
 	public final static int MIN_SPEED = 30;
 	public final static int MAX_SPEED = 100;
 	
@@ -19,34 +20,45 @@ public final class Escape extends ActiveState {
 		this.objectDistance = scanner.scan();
 		this.range = range;
 		this.weight = 1;
+		this.delay = 100;
+		this.start();
 	}
 	
 	@Override
 	public void run() {
-		while(objectDistance > range[0] && objectDistance < range[1]) {
+		synchronized(robot) {
+			robot.Parar(true);
+		}
+		
+		for(
+				objectDistance = scanner.scan(); 
+				objectDistance > range[0] && objectDistance < range[1] && active;
+				objectDistance = scanner.scan()) {
+			
 			super.run();
-			
 			action();
-			objectDistance = scanner.scan();
-			
-			delay = MyRobotLego.calculateMovementDelay(robot.getSpeed(), range[1] - objectDistance);
+			//System.out.printf("Escape, run(), oDistance, %d, speed: %d\n", objectDistance, robot.getRelativeSpeed());
 			loopDelay();
 		}
 		
-		robot.Parar(false);
+		synchronized(robot) {
+			robot.Parar(false);
+			robot.SetRelativeSpeed(originalSpeed);
+		}
 	}
 
 	@Override
-	public void action() {						
-		int relativeDistance = objectDistance - range[0];
-		
-		int speed = MAX_SPEED - (relativeDistance * 100 / range[1]);
-		
-		if(speed < MIN_SPEED) speed += MIN_SPEED - speed;
-		
-		robot.SetSpeed(speed);
-		robot.Reta(range[1] - objectDistance);
-		System.out.println("Escape " + "Speed: " + speed + " Distance: " + (range[1] - objectDistance));
+	public void action() {
+		synchronized(robot) {
+			int relativeDistance = objectDistance - range[0];
+			
+			int speed = MAX_SPEED - (relativeDistance * 100 / range[1]);
+			
+			if(speed < MIN_SPEED) speed += MIN_SPEED - speed;
+			
+			robot.SetRelativeSpeed(speed);
+			robot.Reta(1);
+		}
 	}
 
 }

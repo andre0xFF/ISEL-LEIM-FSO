@@ -15,7 +15,7 @@ public abstract class State extends Thread
 	public final static int DEFAULT_DELAY = 500;
 	
 	protected int delay = DEFAULT_DELAY;													// How much time (ms) the state sleeps between each action
-	protected boolean active = true;
+	protected volatile boolean active = true;
 	protected final int id;
 	
 	public int getDelay() { return this.delay; }
@@ -29,12 +29,6 @@ public abstract class State extends Thread
 	public State(MyRobotLego robot, int id) {
 		this.robot = robot;
 		this.id = id;
-		this.start();
-	}
-	
-	@Override
-	public void run() {		
-		if(!active) this.interrupt();
 	}
 	
 	protected void loopDelay() {

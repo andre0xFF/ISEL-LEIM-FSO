@@ -12,13 +12,20 @@ import robot.MyRobotLego;
  *
  */
 public abstract class ActiveState extends State 
-{
+{	
 	protected final Scanner scanner;
 
 	protected int weight = 0;
 	protected boolean execute = false;
+	protected int originalSpeed = robot.getRelativeSpeed();
 	
-	public int getWeight() { return this.weight; }
+	public int getWeight() { 
+		return this.weight; 
+	}
+	
+	public int getScannerID() {
+		return scanner.id;
+	}
 
 	public ActiveState(MyRobotLego robot, Scanner scanner, int id) {
 		super(robot, id);
@@ -32,16 +39,14 @@ public abstract class ActiveState extends State
 				catch (InterruptedException e) { }
 			}
 		}
-			
-		super.run();
+		
+		if(!scanner.isActive()) {
+			deactivate();
+		}
 	}
 	
 	@Override
-	public void deactivate() {
-		if(scanner != null) {
-			scanner.deactivate();
-		}
-		
+	public void deactivate() {		
 		super.deactivate();
 	}
 

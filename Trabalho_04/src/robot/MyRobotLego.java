@@ -1,5 +1,7 @@
 package robot;
 
+import javax.swing.JTextField;
+
 import RobotLego.RobotLego;
 import robot.passivestates.Roam;
 import robot.scanners.BackScanner;
@@ -7,20 +9,22 @@ import robot.scanners.FrontScanner;
 import robot.states.StateMachine;
 
 public class MyRobotLego {
-	public final static boolean LIVE_MODE = false;
+	public final static boolean LIVE_MODE = true;
 	public final static int FRONT_SCANNER_PORT = RobotLego.S_2;
 	public final static int BACK_SCANNER_PORT = RobotLego.S_1;
-	public final static int DEFAULT_AVERAGE_SPEED = 25;										// cm/s
+	public final static int DEFAULT_AVERAGE_SPEED = 16;										// cm/s
 	
-	private int realSpeed = DEFAULT_AVERAGE_SPEED;
+	private int relativeSpeed;
 	
 	private RobotLego robot;
 	
 	protected final StateMachine stateMachine = new StateMachine(this);
-	
-	public int getSpeed() { return this.realSpeed; }
 
 	public MyRobotLego() {
+		if(LIVE_MODE) robot = new RobotLego();
+	}
+	
+	public MyRobotLego(JTextField txt) {
 		if(LIVE_MODE) robot = new RobotLego();
 	}
 
@@ -29,7 +33,7 @@ public class MyRobotLego {
 	}
 
 	public boolean CloseNXT() {
-		System.out.println("Connection is closed");
+		//System.out.println("Connection is closed");
 
 		if (LIVE_MODE) {
 			robot.Parar(true);
@@ -40,19 +44,19 @@ public class MyRobotLego {
 	}
 
 	public void Reta(int units) {
-		System.out.println("Moving forward " + units + " units");
+		//System.out.println("Moving forward " + units + " units");
 
 		if (LIVE_MODE) robot.Reta(units);
 	}
 
 	public void CurvarDireita(int radius, int angle) {
-		System.out.println("Turning left " + radius + " radius " + angle + " angle");
+		//System.out.println("Turning left " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) robot.CurvarDireita(radius, angle);
 	}
 
 	public void CurvarEsquerda(int radius, int angle) {
-		System.out.println("Turning right " + radius + " radius " + angle + " angle");
+		//System.out.println("Turning right " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) robot.CurvarEsquerda(radius, angle);
 	}
@@ -66,13 +70,19 @@ public class MyRobotLego {
 	}
 
 	public void Parar(boolean trueStop) {
-		System.out.println("Robot stop");
+		//System.out.println("Robot stop");
 
 		if (LIVE_MODE) robot.Parar(trueStop);
 	}
 	
-	public void SetSpeed(int speed) {
-		if (LIVE_MODE) robot.SetSpeed(speed);
+	public int getRelativeSpeed() { 
+		return this.relativeSpeed; 
+	}
+	
+	public void SetRelativeSpeed(int percentage) {
+		this.relativeSpeed = percentage;
+		
+		if (LIVE_MODE) robot.SetSpeed(relativeSpeed);
 	}
 	
 	public void SetSensorLowspeed(int port) {
@@ -80,9 +90,7 @@ public class MyRobotLego {
 	}
 	
 	public int SensorUS(int port) {
-		if (LIVE_MODE) return robot.SensorUS(port);
-		
-		return 10;
+		return LIVE_MODE ? robot.SensorUS(port) : 0;
 	}
 	
 	public void SetSensorTouch(int port) {
@@ -95,27 +103,28 @@ public class MyRobotLego {
 		return 0;
 	}
 	
-
 	public void roam() {
-		if(stateMachine.getPassiveState() != Roam.ID) { stateMachine.setPassiveState(new Roam(this)); }
-		else { stateMachine.deactivatePassiveState(); }
+		if(stateMachine.getPassiveState() != Roam.ID) { 
+			stateMachine.setPassiveState(new Roam(this)); 
+		} else { 
+			stateMachine.deactivatePassiveState(); 
+		}
 	}
 	
-	public void escape(int minDistance, int maxDistance) { 
-		stateMachine.addScanner(new BackScanner(stateMachine, BACK_SCANNER_PORT, new int[]{ minDistance, maxDistance }));
-		
-		// TODO:
-		// toggle
-		// if escape deactivate escape
-		stateMachine.deactivateActiveState();
+	public void escape(int minDistance, int maxDistance) {	
+		if(stateMachine.findScanner(BackScanner.ID) < 0) {
+			stateMachine.addScanner(new BackScanner(stateMachine, BACK_SCANNER_PORT, new int[]{ minDistance, maxDistance }));
+		} else { 
+			stateMachine.rmScanner(BackScanner.ID);
+		}
 	}
 	
 	public void avoid() {
-		// TODO:
-		// toggle
-		// if avoid deactivate avoid
-		
-		stateMachine.addScanner(new FrontScanner(stateMachine, FRONT_SCANNER_PORT));	
+		if(stateMachine.findScanner(FrontScanner.ID) < 0) {
+			stateMachine.addScanner(new FrontScanner(stateMachine, FRONT_SCANNER_PORT));
+		} else { 
+			stateMachine.rmScanner(FrontScanner.ID);
+		}
 	}
 
 	public static void sleep(int ms) { 

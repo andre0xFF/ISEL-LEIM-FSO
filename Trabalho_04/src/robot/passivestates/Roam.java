@@ -15,6 +15,12 @@ public final class Roam extends PassiveState
 	
 	public Roam(MyRobotLego robot) {
 		super(robot, ID);
+		
+		synchronized(robot) { 
+			robot.SetRelativeSpeed(45);
+		}
+		
+		this.start();
 	}
 	
 	@Override
@@ -23,13 +29,15 @@ public final class Roam extends PassiveState
 			super.run();
 			action();
 			
-			if(distance != 0) { delay = MyRobotLego.calculateMovementDelay(robot.getSpeed(), distance); }
-			else if(radius != 0) { delay = MyRobotLego.calculateMovementDelay(robot.getSpeed(), radius, angle); }
-			
+			if(distance != 0) { delay = MyRobotLego.calculateMovementDelay(MyRobotLego.DEFAULT_AVERAGE_SPEED, distance); }
+			else if(radius != 0) { delay = MyRobotLego.calculateMovementDelay(MyRobotLego.DEFAULT_AVERAGE_SPEED, radius, angle); }
+			//System.out.printf("Roam, run(), distance, %d, radius: %d, speed: %d\n", distance, radius, robot.getRelativeSpeed());
 			loopDelay();
 		}
 		
-		robot.Parar(false);
+		synchronized(robot) {
+			robot.Parar(false);
+		}
 	}
 
 	@Override
@@ -40,19 +48,21 @@ public final class Roam extends PassiveState
 		
 		order = randomNumberWithoutRepeating(1, 3, order);
 		
-		switch(order) {
-		case 1:
-			distance = randomNumberWithoutRepeating(10, 45, 0);
-			robot.Reta(distance);
-			break;
-		case 2:
-			radius = randomNumberWithoutRepeating(5, 15, 0);
-			robot.CurvarDireita(radius, angle);
-			break;
-		case 3:
-			radius = randomNumberWithoutRepeating(5, 15, 0);
-			robot.CurvarEsquerda(radius, angle);
-			break;
+		synchronized(robot) {
+			switch(order) {
+			case 1:
+				distance = randomNumberWithoutRepeating(10, 50, 0);
+				robot.Reta(distance);
+				break;
+			case 2:
+				radius = randomNumberWithoutRepeating(10, 50, 0);
+				robot.CurvarDireita(radius, angle);
+				break;
+			case 3:
+				radius = randomNumberWithoutRepeating(10, 50, 0);
+				robot.CurvarEsquerda(radius, angle);
+				break;
+			}
 		}
 
 	}
@@ -61,7 +71,9 @@ public final class Roam extends PassiveState
 		Random r = new Random();
 		int i = r.nextInt(max) + min;
 		
-		if(i == previous) { i = randomNumberWithoutRepeating(min, max, previous); }
+		if(i == previous) { 
+			i = randomNumberWithoutRepeating(min, max, previous); 		
+		}
 		
 		return i;
 	}

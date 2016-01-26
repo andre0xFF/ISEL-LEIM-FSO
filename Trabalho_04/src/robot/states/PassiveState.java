@@ -13,7 +13,7 @@ import robot.MyRobotLego;
  */
 public abstract class PassiveState extends State
 {
-	protected boolean pause = false;
+	protected volatile boolean pause = false;
 	
 	public boolean isPaused() { return this.pause; }	
 	public void pause() { this.pause = true; }
@@ -21,7 +21,7 @@ public abstract class PassiveState extends State
 	public void unpause() {
 		synchronized(robot) {
 			this.pause = false;
-			robot.notify();
+			robot.notifyAll();
 		}
 	}
 	
@@ -29,13 +29,11 @@ public abstract class PassiveState extends State
 		super(robot, id);
 	}
 	
-	public void run() {
-		super.run();
-		
+	public void run() {		
 		while(active && pause) {
 			synchronized(robot) {
 				try { robot.wait(); }
-				catch (InterruptedException e) { }
+				catch (InterruptedException e) { System.out.println("PassiveState, run(), InterruptedException"); }
 			}
 		}
 	}
