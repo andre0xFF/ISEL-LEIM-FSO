@@ -7,8 +7,11 @@ import robot.scanners.*;
 
 public class StateMachine implements StateTrigger {
 	private final static int TOTAL_STATES = 4;
+	private final static int STATE_ON = 1;
+	private final static int STATE_OFF = 0;
+	
 	private final MyRobotLego robot;	
-	private static int DEFAULT_STATE = WaitState.ID;
+	private static int DEFAULT_STATE;
 	
 	private RobotState currentState;
 	private int[] states = new int[TOTAL_STATES];
@@ -18,17 +21,15 @@ public class StateMachine implements StateTrigger {
 	
 	public StateMachine(MyRobotLego robot) {
 		this.robot = robot;
-		setDefaultState();
+		setDefaultState(WaitState.ID);
 	}
 	
 	public void waitState() {
-		StateMachine.DEFAULT_STATE = WaitState.ID;
-		nextState();
+		setDefaultState(WaitState.ID);
 	}
 	
 	public void walkState() {
-		StateMachine.DEFAULT_STATE = WalkState.ID;
-		nextState();
+		setDefaultState(WalkState.ID);
 	}
 	
 	public boolean runState(int minDistance, int maxDistance) {
@@ -37,7 +38,8 @@ public class StateMachine implements StateTrigger {
 			return true;
 		} else {
 			bScanner.deactivate();
-			states[RunState.ID] = 0;
+			states[RunState.ID] = STATE_OFF;
+			bScanner = null;
 			nextState();
 			return false;
 		}
@@ -49,21 +51,24 @@ public class StateMachine implements StateTrigger {
 			return true;
 		} else {
 			fScanner.deactivate();
-			states[AvoidState.ID] = 0;
+			states[AvoidState.ID] = STATE_OFF;
+			fScanner = null;
 			nextState();
 			return false;
 		}
 	}
 	
-	private void setDefaultState() {
-		states[DEFAULT_STATE] = 1;
+	private void setDefaultState(int id) {
+		states[DEFAULT_STATE] = STATE_OFF;	
+		states[id] = STATE_ON;
+		DEFAULT_STATE = id;
 		nextState();
 	}
 
 	public void nextState() {		
 		int i = TOTAL_STATES;
 		while(--i > 0) {
-			if(states[i] > 0) { break; }
+			if(states[i] == STATE_ON) { break; }
 		}
 		
 		if(currentState != null && i == currentState.id) { return; }
@@ -95,14 +100,32 @@ public class StateMachine implements StateTrigger {
 
 	@Override
 	public void ObjectDetected(int stateID) {		
-		states[stateID] = 1;
+		states[stateID] = STATE_ON;
 		nextState();
 	}
 
 	@Override
 	public void ObjectIsGone(int stateID) {
-		states[stateID] = 0;
+		states[stateID] = STATE_OFF;
 		nextState();
+	}
+
+	public void deactivate() {
+		if(fScanner != null) {
+			fScanner.deactivate();
+		}
+		
+		if(bScanner != null) {
+			bScanner.deactivate();
+		}
+		
+		if(currentState != null) {
+			currentState.deactivate();
+		}
+		
+		for(int i = 0; i < states.length; i++) {
+			states[i] = STATE_OFF;
+		}
 	}
 	
 }
@@ -113,13 +136,11 @@ final class WaitState extends RobotState {
 	
 	public WaitState(MyRobotLego robot) {
 		super(robot, ID);
+		super.delay = 1000;
 	}
 
 	@Override
-	protected void action() {
-		try { Thread.sleep(1000); }
-		catch (InterruptedException e) { e.printStackTrace(); }
-	}
+	protected void action() { }
 
 	@Override
 	protected void end() { }

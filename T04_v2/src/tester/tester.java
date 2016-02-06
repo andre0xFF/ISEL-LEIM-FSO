@@ -10,7 +10,7 @@ public class tester {
 		
 		machine.waitState();
 		
-		Thread.sleep(10000);
+		Thread.sleep(5000);
 		
 		machine.runState(10, 100);		
 		Thread.sleep(3000);

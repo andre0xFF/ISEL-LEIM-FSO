@@ -5,6 +5,7 @@ import java.util.Random;
 import javax.swing.JTextField;
 
 import RobotLego.RobotLego;
+import robot.states.StateMachine;
 
 public class MyRobotLego {
 	public final static boolean LIVE_MODE = false;
@@ -15,6 +16,8 @@ public class MyRobotLego {
 	private int relativeSpeed;
 	
 	private RobotLego robot;
+	private StateMachine machine;
+	private boolean walk = false;
 	
 	//protected final StateMachine stateMachine = new StateMachine(this);
 
@@ -27,17 +30,17 @@ public class MyRobotLego {
 	}
 
 	public boolean OpenNXT(String name) {
-		if(LIVE_MODE) {	
-			if(robot.OpenNXT(name)) {
-				SetRelativeSpeed(50);
-				return true;
-			} else { return false; }
-		} else { return true; }
+		machine = new StateMachine(this);
+		
+		if(LIVE_MODE) { return robot.OpenNXT(name); }
+		else { return true; }
 	}
 
 	public boolean CloseNXT() {
-		//System.out.println("Connection is closed");
-
+		machine.deactivate();
+		machine = null;
+		System.gc();
+		
 		if (LIVE_MODE) {
 			robot.Parar(true);
 			robot.CloseNXT();
@@ -49,33 +52,57 @@ public class MyRobotLego {
 	public void Reta(int units) {
 		//System.out.println("Moving forward " + units + " units");
 
-		if (LIVE_MODE) robot.Reta(units);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.Reta(units);
+			}
+		}
 	}
 
 	public void CurvarDireita(int radius, int angle) {
 		//System.out.println("Turning left " + radius + " radius " + angle + " angle");
 
-		if (LIVE_MODE) robot.CurvarDireita(radius, angle);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.CurvarDireita(radius, angle);
+			}
+		}
 	}
 
 	public void CurvarEsquerda(int radius, int angle) {
 		//System.out.println("Turning right " + radius + " radius " + angle + " angle");
 
-		if (LIVE_MODE) robot.CurvarEsquerda(radius, angle);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.CurvarEsquerda(radius, angle);
+			}
+		}
 	}
 
 	public void AjustarVMD(int offset) {
-		if (LIVE_MODE) robot.AjustarVMD(offset);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.AjustarVMD(offset);
+			}
+		}
 	}
 
 	public void AjustarVME(int offset) {
-		if (LIVE_MODE) robot.AjustarVME(offset);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.AjustarVME(offset);
+			}
+		}
 	}
 
 	public void Parar(boolean trueStop) {
 		//System.out.println("Robot stop");
 
-		if (LIVE_MODE) robot.Parar(trueStop);
+		if (LIVE_MODE) {
+			synchronized(robot) {
+				robot.Parar(trueStop);
+			}
+		}
 	}
 	
 	public int getRelativeSpeed() { 
@@ -94,7 +121,7 @@ public class MyRobotLego {
 	
 	public int SensorUS(int port) {
 		Random r = new Random();
-		return LIVE_MODE ? robot.SensorUS(port) : r.nextInt(50);
+		return LIVE_MODE ? robot.SensorUS(port) : r.nextInt(151);
 	}
 	
 	public void SetSensorTouch(int port) {
@@ -103,20 +130,27 @@ public class MyRobotLego {
 	
 	public int Sensor(int port) {
 		Random r = new Random();		
-		return LIVE_MODE ? robot.Sensor(port) : 1;
+		return LIVE_MODE ? robot.Sensor(port) : r.nextInt(2);
 
 	}
 	
 	public void goWalk() {
-
+		if(!walk) { 
+			machine.walkState(); 
+			walk = true;
+		}
+		else { 
+			machine.waitState(); 
+			walk = false;
+		}
 	}
 	
 	public void goRun(int minDistance, int maxDistance) {	
-
+		machine.runState(minDistance, maxDistance);
 	}
 	
 	public void goAvoid() {
-
+		machine.avoidState();
 	}
 
 	public static void sleep(int ms) { 

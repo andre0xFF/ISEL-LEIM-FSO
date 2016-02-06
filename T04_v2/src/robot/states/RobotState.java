@@ -30,7 +30,8 @@ public abstract class RobotState extends Thread {
 	
 	@Override
 	public void run() {
-		while(active) {						
+		while(active) {
+			//System.out.println(id + " " + active + " " + delay);
 			action();
 			if(LOG) { log(); }
 			
