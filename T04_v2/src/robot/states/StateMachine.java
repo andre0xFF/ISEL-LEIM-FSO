@@ -171,13 +171,13 @@ final class WalkState extends RobotState {
 		
 		switch(order = nextMovement(order)) {
 		case 1:
-			super.robot.Reta(distance);
+			super.robot.Reta(distance, false);
 			break;
 		case 2:
-			super.robot.CurvarDireita(radius, angle);
+			super.robot.CurvarDireita(radius, angle, false);
 			break;
 		case 3:
-			super.robot.CurvarEsquerda(radius, angle);
+			super.robot.CurvarEsquerda(radius, angle, false);
 			break;
 		}
 		
@@ -253,7 +253,7 @@ final class RunState extends RobotState {
 		if(speed < MIN_SPEED) speed += MIN_SPEED - speed;
 		
 		robot.SetRelativeSpeed(speed);
-		robot.Reta(1);
+		robot.Reta(1, false);
 		
 		objectDistance = scanner.findObjectDistance();
 	}
@@ -283,8 +283,8 @@ final class AvoidState extends RobotState {
 
 	@Override
 	protected void action() {
-		robot.Reta(-20);
-		robot.CurvarEsquerda(0, 90);
+		robot.Reta(-20, false);
+		robot.CurvarEsquerda(0, 90, false);
 	}
 
 	@Override

@@ -75,22 +75,17 @@ public abstract class Scanner extends Thread {
 	
 	@Override
 	public void run() {
-		while(active) {
-			findObjectDistance();
+		findObjectDistance();
 
-			if(!objectDetected && newObjectDetected(trigger, objectDistance)) {
-				objectDetected(id);
-				if(LOG) { log(); }
-			} else if(objectDetected && oldObjectGone(trigger, objectDistance)) {
-				objectIsGone(id);
-				if(LOG) { log(); }
-			}
-			
-			scanDelay();
+		if(!objectDetected && newObjectDetected(trigger, objectDistance)) {
+			objectDetected(id);
+			if(LOG) { log(); }
+		} else if(objectDetected && oldObjectGone(trigger, objectDistance)) {
+			objectIsGone(id);
+			if(LOG) { log(); }
 		}
 		
-		end();
-		interrupt();
+		scanDelay();
 	}
 	
 	protected abstract void setPort();

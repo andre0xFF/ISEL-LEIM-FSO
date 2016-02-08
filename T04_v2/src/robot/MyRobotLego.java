@@ -8,7 +8,7 @@ import RobotLego.RobotLego;
 import robot.states.StateMachine;
 
 public class MyRobotLego {
-	public final static boolean LIVE_MODE = false;
+	public final static boolean LIVE_MODE = true;
 	public final static int FRONT_SCANNER_PORT = RobotLego.S_2;
 	public final static int BACK_SCANNER_PORT = RobotLego.S_1;
 	public final static int DEFAULT_AVERAGE_SPEED = 14;								// cm/s
@@ -30,10 +30,12 @@ public class MyRobotLego {
 	}
 
 	public boolean OpenNXT(String name) {
-		machine = new StateMachine(this);
+		boolean r = true;
 		
-		if(LIVE_MODE) { return robot.OpenNXT(name); }
-		else { return true; }
+		if(LIVE_MODE) { r = robot.OpenNXT(name); }
+		
+		machine = new StateMachine(this);
+		return r;
 	}
 
 	public boolean CloseNXT() {
@@ -49,35 +51,36 @@ public class MyRobotLego {
 		return true;
 	}
 
-	public void Reta(int units) {
+	public void Reta(int units, boolean stop) {
 		//System.out.println("Moving forward " + units + " units");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.Reta(units);
-				robot.Parar(false);
+
+				if(stop) robot.Parar(false);
 			}
 		}
 	}
 
-	public void CurvarDireita(int radius, int angle) {
+	public void CurvarDireita(int radius, int angle, boolean stop) {
 		//System.out.println("Turning left " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.CurvarDireita(radius, angle);
-				robot.Parar(false);
+				if(stop) robot.Parar(false);
 			}
 		}
 	}
 
-	public void CurvarEsquerda(int radius, int angle) {
+	public void CurvarEsquerda(int radius, int angle, boolean stop) {
 		//System.out.println("Turning right " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.CurvarEsquerda(radius, angle);
-				robot.Parar(false);
+				if(stop) robot.Parar(false);
 			}
 		}
 	}
@@ -143,7 +146,8 @@ public class MyRobotLego {
 			walk = true;
 		}
 		else { 
-			machine.waitState(); 
+			machine.waitState();
+			robot.Parar(false);
 			walk = false;
 		}
 	}

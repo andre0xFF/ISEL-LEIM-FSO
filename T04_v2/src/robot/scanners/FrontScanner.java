@@ -39,5 +39,15 @@ public class FrontScanner extends Scanner {
 	protected boolean oldObjectGone(int[] trigger, int objectDistance) {
 		return (objectDistance != trigger[0]);
 	}
+	
+	@Override
+	public void run() {
+		while(active) {
+			super.run();
+		}
+		
+		end();
+		interrupt();
+	}
 
 }

@@ -40,6 +40,16 @@ public class BackScanner extends Scanner {
 	protected void log() {
 		System.out.printf("BackScanner, log(), objectDetected: %s, objectDistance: %d\n", objectDetected, objectDistance);
 	}
+	
+	@Override
+	public void run() {
+		while(active) {
+			super.run();
+		}
+		
+		end();
+		interrupt();
+	}
 
 
 }

@@ -65,7 +65,7 @@ public class Trabalho04JFrame extends JFrame {
 	void initVariables() {
 		robotName = "FSO1";
 		offsetLeft = 0;
-		offsetRight = 0;
+		offsetRight = 2;
 		radius = 0;
 		angle = 0;
 		distance = 0;
@@ -263,7 +263,7 @@ public class Trabalho04JFrame extends JFrame {
 				robotMove(
 						stringToInteger(txtDistancia.getText()),
 						stringToInteger(txtRaio.getText()), 
-						stringToInteger(txtDistancia.getText()), 
+						stringToInteger(txtAngulo.getText()), 
 						4,
 						offsetLeft, offsetRight
 						);
@@ -294,7 +294,7 @@ public class Trabalho04JFrame extends JFrame {
 				robotMove(
 						stringToInteger(txtDistancia.getText()), 
 						stringToInteger(txtRaio.getText()), 
-						stringToInteger(txtDistancia.getText()), 
+						stringToInteger(txtAngulo.getText()), 
 						6,
 						offsetLeft, offsetRight
 						);
@@ -361,10 +361,10 @@ public class Trabalho04JFrame extends JFrame {
 		textDistMaxFugir = new JTextField();
 		textDistMaxFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(stringToInteger(textDistMaxFugir.getText()) > 255) textDistMaxFugir.setText("255");
+				if(stringToInteger(textDistMaxFugir.getText()) > 255) textDistMaxFugir.setText("250");
 			}
 		});
-		textDistMaxFugir.setText("255");
+		textDistMaxFugir.setText("250");
 		textDistMaxFugir.setBounds(485, 210, 30, 20);
 		contentPane.add(textDistMaxFugir);
 		textDistMaxFugir.setColumns(10);
@@ -412,17 +412,17 @@ public class Trabalho04JFrame extends JFrame {
 
 		switch(direction) {
 			case 8:
-				robotLego.Reta(distance);
+				robotLego.Reta(distance, true);
 				break;
 			case 2:
-				robotLego.Reta(-distance);
+				robotLego.Reta(-distance, true);
 				break;
 			case 6:
-				robotLego.CurvarDireita(radius, angle);
+				robotLego.CurvarDireita(radius, angle, true);
 				robotLego.AjustarVMD(offsetR);
 				break;
 			case 4:
-				robotLego.CurvarEsquerda(radius, angle);
+				robotLego.CurvarEsquerda(radius, angle, true);
 				robotLego.AjustarVME(offsetL);
 				break;
 			case 5:
