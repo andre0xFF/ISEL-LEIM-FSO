@@ -11,7 +11,7 @@ public class MyRobotLego {
 	public final static boolean LIVE_MODE = false;
 	public final static int FRONT_SCANNER_PORT = RobotLego.S_2;
 	public final static int BACK_SCANNER_PORT = RobotLego.S_1;
-	public final static int DEFAULT_AVERAGE_SPEED = 14;										// cm/s
+	public final static int DEFAULT_AVERAGE_SPEED = 14;								// cm/s
 	
 	private int relativeSpeed;
 	
@@ -55,6 +55,7 @@ public class MyRobotLego {
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.Reta(units);
+				robot.Parar(false);
 			}
 		}
 	}
@@ -65,6 +66,7 @@ public class MyRobotLego {
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.CurvarDireita(radius, angle);
+				robot.Parar(false);
 			}
 		}
 	}
@@ -75,6 +77,7 @@ public class MyRobotLego {
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.CurvarEsquerda(radius, angle);
+				robot.Parar(false);
 			}
 		}
 	}

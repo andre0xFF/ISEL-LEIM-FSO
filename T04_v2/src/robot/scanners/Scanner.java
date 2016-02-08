@@ -29,8 +29,9 @@ public abstract class Scanner extends Thread {
 		this.listeners.add(toAdd); 
 	}
 	
-	public int getObjectDistance() {
-		return this.objectDistance;
+	public int findObjectDistance() {
+		objectDistance = scan();
+		return objectDistance;
 	}
 	
 	/* What each scanner will report */
@@ -75,7 +76,7 @@ public abstract class Scanner extends Thread {
 	@Override
 	public void run() {
 		while(active) {
-			objectDistance = scan();
+			findObjectDistance();
 
 			if(!objectDetected && newObjectDetected(trigger, objectDistance)) {
 				objectDetected(id);

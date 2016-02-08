@@ -59,7 +59,7 @@ public class StateMachine implements StateTrigger {
 	}
 	
 	private void setDefaultState(int id) {
-		states[DEFAULT_STATE] = STATE_OFF;	
+		states[DEFAULT_STATE] = STATE_OFF;
 		states[id] = STATE_ON;
 		DEFAULT_STATE = id;
 		nextState();
@@ -127,7 +127,6 @@ public class StateMachine implements StateTrigger {
 			states[i] = STATE_OFF;
 		}
 	}
-	
 }
 
 final class WaitState extends RobotState {
@@ -235,13 +234,18 @@ final class RunState extends RobotState {
 		super(robot, ID);
 		this.scanner = scanner;
 		this.range = scanner.getTrigger();
-		this.objectDistance = scanner.getObjectDistance();
+		this.objectDistance = scanner.findObjectDistance();
 		super.delay = 100;
 		super.robot.Parar(true);
 	}
 
 	@Override
 	protected void action() {
+		if(objectDistance < range[0] || objectDistance > range[1]) { 
+			super.active = false;
+			return; 
+		}
+		
 		int relativeDistance = objectDistance - range[0];
 		
 		speed = MAX_SPEED - (relativeDistance * 100 / range[1]);
@@ -251,7 +255,7 @@ final class RunState extends RobotState {
 		robot.SetRelativeSpeed(speed);
 		robot.Reta(1);
 		
-		objectDistance = scanner.getObjectDistance();
+		objectDistance = scanner.findObjectDistance();
 	}
 
 	@Override
@@ -274,6 +278,7 @@ final class AvoidState extends RobotState {
 	public AvoidState(MyRobotLego robot) {
 		super(robot, ID);
 		robot.Parar(true);
+		robot.SetRelativeSpeed(90);
 	}
 
 	@Override
