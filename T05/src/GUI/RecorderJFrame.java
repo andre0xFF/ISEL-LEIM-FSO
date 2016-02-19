@@ -8,13 +8,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import Robot.MyRobotLego;
+import Robot.Recorder;
+
 @SuppressWarnings("serial")
 public class RecorderJFrame extends JFrame implements Runnable {
-	private T04JFrame T04JFrame;
 	private JPanel contentPane;
+	private JFrame t05;
+	private Recorder recorder;
 	
-	public RecorderJFrame() {
-		T04JFrame = new T04JFrame();
+	public RecorderJFrame(T05JFrame t05, Recorder recorder) {
+		this.recorder = recorder;
+		this.t05 = t05;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 214, 253);
@@ -26,7 +31,8 @@ public class RecorderJFrame extends JFrame implements Runnable {
 		JButton btnSaveConfig = new JButton("Guardar Configura\u00E7\u00E3o");
 		btnSaveConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//saveRobotConfig();
+				recorder.saveConfig();
+				t05.log("Configuration saved!");
 			}
 		});
 		btnSaveConfig.setBounds(10, 11, 175, 23);
@@ -35,7 +41,8 @@ public class RecorderJFrame extends JFrame implements Runnable {
 		JButton btnLoadConfig = new JButton("Carregar Configura\u00E7\u00E3o");
 		btnLoadConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//loadRobotConfig();
+				recorder.loadConfig();
+				t05.updateGuiComponents();
 			}
 		});
 		btnLoadConfig.setBounds(10, 45, 175, 23);
@@ -93,16 +100,10 @@ public class RecorderJFrame extends JFrame implements Runnable {
 		contentPane.add(btnStop);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-	
-	public static void main(String[] args) {
-		RecorderJFrame frame = new RecorderJFrame();
-		frame.setVisible(true);
+		setVisible(true);
 	}
 	
 	@Override
-	public void run() {
-		while(true);	
-	}
+	public void run() { }
 
 }

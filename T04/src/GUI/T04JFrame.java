@@ -17,7 +17,6 @@ import Robot.MyRobotLego;
 
 @SuppressWarnings("serial")
 public class T04JFrame extends JFrame implements Runnable {
-	
 	private JPanel contentPane;
 	private JTextField txtOffsetEsquerda;
 	private JTextField txtOffsetDireita;
@@ -60,7 +59,7 @@ public class T04JFrame extends JFrame implements Runnable {
 	private boolean evitarObs;
 	private boolean fugir;
 	
-	private MyRobotLego robotLego;
+	protected MyRobotLego robotLego;
 	
 	void initVariables() {
 		robotName = "FSO1";
@@ -78,25 +77,32 @@ public class T04JFrame extends JFrame implements Runnable {
 		robotLego = new MyRobotLego();
 	}
 	
-	void updateGuiComponents() {
-		txtOffsetDireita.setText(Integer.toString(offsetRight));
-		txtOffsetEsquerda.setText(Integer.toString(offsetLeft));
-		txtRobot.setText(robotName);
+	public void updateGuiComponents() {
+		txtRobot.setText(robotLego.getName());
+		
+		txtOffsetEsquerda.setEnabled(onOff);
+		txtOffsetEsquerda.setText(Integer.toString(robotLego.getOffsets()[0]));
+		
+		txtOffsetDireita.setEnabled(onOff);
+		txtOffsetDireita.setText(Integer.toString(robotLego.getOffsets()[1]));
+		
+		txtAngulo.setEnabled(onOff);
 		txtAngulo.setText(Integer.toString(angle));
+		
+		txtDistancia.setEnabled(onOff);
 		txtDistancia.setText(Integer.toString(distance));
+		
+		txtRaio.setEnabled(onOff);
 		txtRaio.setText(Integer.toString(radius));
+		
 		rdbtnOnOff.setSelected(onOff);
-		chckbxDebug.setSelected(debug);
+		
+		chckbxDebug.setSelected(debug);	
 		chckbxVaguear.setSelected(vaguear);
 		chckbxEvitarObstaculo.setSelected(evitarObs);
 		chckbxFugir.setSelected(fugir);
-		txtLog.setText(debugText);
 		
-		txtAngulo.setEnabled(onOff);
-		txtDistancia.setEnabled(onOff);
-		txtRaio.setEnabled(onOff);
-		txtOffsetDireita.setEnabled(onOff);
-		txtOffsetEsquerda.setEnabled(onOff);
+		txtLog.setText(debugText);
 		
 		btnFrente.setEnabled(onOff);
 		btnDireita.setEnabled(onOff);
@@ -401,8 +407,8 @@ public class T04JFrame extends JFrame implements Runnable {
 		
 	}
 	
-	void log(String v) {
-		if (!debug) return;
+	public void log(String v) {
+		if (!debug) { return; }
 		
 		txtLog.setText(v);
 	}

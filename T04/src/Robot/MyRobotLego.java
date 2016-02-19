@@ -13,11 +13,13 @@ public class MyRobotLego {
 	public final static int BACK_SCANNER_PORT = RobotLego.S_1;
 	public final static int DEFAULT_AVERAGE_SPEED = 14;								// cm/s
 	
+	private String name = "";
 	private int relativeSpeed;
 	
 	private RobotLego robot;
 	private StateMachine machine;
 	private boolean walk = false;
+	private int[] offsets = new int[] {0, 0};
 	
 	//protected final StateMachine stateMachine = new StateMachine(this);
 
@@ -28,9 +30,18 @@ public class MyRobotLego {
 	public MyRobotLego(JTextField txt) {
 		if(LIVE_MODE) { robot = new RobotLego(); }
 	}
+	
+	public String getName() {
+		return this.name;
+	}
+	
+	public int[] getOffsets() {
+		return this.offsets ;
+	}
 
 	public boolean OpenNXT(String name) {
 		boolean r = true;
+		this.name = name;
 		
 		if(LIVE_MODE) { r = robot.OpenNXT(name); }
 		
@@ -86,6 +97,8 @@ public class MyRobotLego {
 	}
 
 	public void AjustarVMD(int offset) {
+		this.offsets[1] = offset;
+		
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.AjustarVMD(offset);
@@ -94,6 +107,8 @@ public class MyRobotLego {
 	}
 
 	public void AjustarVME(int offset) {
+		this.offsets[0] = offset;
+		
 		if (LIVE_MODE) {
 			synchronized(robot) {
 				robot.AjustarVME(offset);
