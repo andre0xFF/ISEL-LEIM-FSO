@@ -17,6 +17,8 @@ import Robot.MyRobotLego;
 
 @SuppressWarnings("serial")
 public class T04JFrame extends JFrame implements Runnable {
+	private static final String DEFAULT_ROBOT_NAME = "FSO1";
+	
 	private JPanel contentPane;
 	private JTextField txtOffsetEsquerda;
 	private JTextField txtOffsetDireita;
@@ -25,7 +27,7 @@ public class T04JFrame extends JFrame implements Runnable {
 	private JLabel lblLog;
 	private JTextField txtLog;
 	private JLabel lblRobot;
-	private JTextField txtRobot;
+	protected JTextField txtRobot;
 	private JTextField txtRaio;
 	private JLabel lblAngulo;
 	private JTextField txtAngulo;
@@ -44,25 +46,23 @@ public class T04JFrame extends JFrame implements Runnable {
 	
 	private int offsetLeft;
 	private int offsetRight;
-	private String robotName;
 	private String debugText;
 	private int radius;
 	private int distance;
 	private int angle;
-	private boolean onOff;
+	protected boolean onOff = false;
 	private boolean debug;
 	
 	private JTextField textDistMinFugir;
 	private JTextField textDistMaxFugir;
 	
-	private boolean vaguear;
-	private boolean evitarObs;
-	private boolean fugir;
+	private boolean walk;
+	private boolean avoid;
+	private boolean run;
 	
 	protected MyRobotLego robotLego;
 	
-	void initVariables() {
-		robotName = "FSO1";
+	void initVariables(MyRobotLego robot) {
 		offsetLeft = 0;
 		offsetRight = 2;
 		radius = 0;
@@ -70,59 +70,52 @@ public class T04JFrame extends JFrame implements Runnable {
 		distance = 0;
 		debug = true;
 		onOff = false;
-		vaguear = false;
-		evitarObs = false;
-		fugir = false;
+		walk = false;
+		avoid = false;
+		run = false;
 		
-		robotLego = new MyRobotLego();
+		this.robotLego = robot;
 	}
 	
 	public void updateGuiComponents() {
-		txtRobot.setText(robotLego.getName());
-		
 		txtOffsetEsquerda.setEnabled(onOff);
-		txtOffsetEsquerda.setText(Integer.toString(robotLego.getOffsets()[0]));
-		
 		txtOffsetDireita.setEnabled(onOff);
-		txtOffsetDireita.setText(Integer.toString(robotLego.getOffsets()[1]));
-		
 		txtAngulo.setEnabled(onOff);
 		txtAngulo.setText(Integer.toString(angle));
-		
 		txtDistancia.setEnabled(onOff);
 		txtDistancia.setText(Integer.toString(distance));
-		
 		txtRaio.setEnabled(onOff);
 		txtRaio.setText(Integer.toString(radius));
-		
 		rdbtnOnOff.setSelected(onOff);
-		
 		chckbxDebug.setSelected(debug);	
-		chckbxVaguear.setSelected(vaguear);
-		chckbxEvitarObstaculo.setSelected(evitarObs);
-		chckbxFugir.setSelected(fugir);
-		
+		chckbxVaguear.setSelected(walk);
+		chckbxEvitarObstaculo.setSelected(avoid);
+		chckbxFugir.setSelected(run);
 		txtLog.setText(debugText);
-		
 		btnFrente.setEnabled(onOff);
 		btnDireita.setEnabled(onOff);
 		btnEsquerda.setEnabled(onOff);
 		btnRectaguarda.setEnabled(onOff);
 		btnParar.setEnabled(onOff);
-		
 		textDistMaxFugir.setEnabled(onOff);
 		textDistMinFugir.setEnabled(onOff);
 		chckbxEvitarObstaculo.setEnabled(onOff);
 		chckbxFugir.setEnabled(onOff);
 		chckbxVaguear.setEnabled(onOff);
+		
+		if(robotLego.getName() != "") {
+			txtRobot.setText(robotLego.getName());
+			txtOffsetEsquerda.setText(Integer.toString(robotLego.getOffsets()[0]));
+			txtOffsetDireita.setText(Integer.toString(robotLego.getOffsets()[1]));
+		}
 	}
 
 	public static void main(String[] args) {
-		T04JFrame frame = new T04JFrame();
+		T04JFrame frame = new T04JFrame(new MyRobotLego());
 		frame.setVisible(true);
 	}
 
-	public T04JFrame() {
+	public T04JFrame(MyRobotLego robot) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 587, 327);
 		contentPane = new JPanel();
@@ -139,6 +132,7 @@ public class T04JFrame extends JFrame implements Runnable {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				offsetLeft = stringToInteger(txtOffsetEsquerda.getText());
+				robot.AjustarVME(offsetLeft);
 				log("Offset esquerda:" + Integer.toString(offsetLeft));
 			}
 		});
@@ -150,6 +144,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		txtOffsetDireita.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				offsetRight = stringToInteger(txtOffsetDireita.getText());
+				robot.AjustarVMD(offsetRight);
 				log("Offset direita:" + Integer.toString(offsetRight));
 			}	
 		});
@@ -184,10 +179,10 @@ public class T04JFrame extends JFrame implements Runnable {
 		contentPane.add(lblRobot);
 		
 		txtRobot = new JTextField();
+		txtRobot.setText(DEFAULT_ROBOT_NAME);
 		txtRobot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				robotName = txtRobot.getText();
-				log("Robot:" + robotName);
+				log("Robot:" + txtRobot.getText());
 			}
 		});
 		txtRobot.setColumns(10);
@@ -330,6 +325,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		chckbxVaguear.addActionListener(new ActionListener() {		
 			public void actionPerformed(ActionEvent e) {
 				robotLego.goWalk();
+				walk = !walk;
 			}
 			
 		});
@@ -340,6 +336,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		chckbxEvitarObstaculo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				robotLego.goAvoid();
+				avoid = !avoid;
 			}
 		});
 		contentPane.add(chckbxEvitarObstaculo);
@@ -348,6 +345,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		chckbxFugir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				robotLego.goRun(Integer.parseInt(textDistMinFugir.getText()), Integer.parseInt(textDistMaxFugir.getText()));
+				run = !run;
 			}
 		});
 		chckbxFugir.setBounds(443, 147, 97, 23);
@@ -380,7 +378,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		contentPane.add(lblDistancia_1);
 		
 		this.setVisible(true);
-		initVariables();
+		initVariables(robot);
 		updateGuiComponents();
 		
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -392,12 +390,12 @@ public class T04JFrame extends JFrame implements Runnable {
 	}
 	
 	protected void robotOnOff(Boolean status) {
-		onOff = (status == true) ? !robotLego.CloseNXT() : robotLego.OpenNXT(robotName);
+		onOff = (status == true) ? !robotLego.CloseNXT() : robotLego.OpenNXT(txtRobot.getText());
 		updateGuiComponents();
 		log("On/Off: " + Boolean.toString(onOff));
 	}
 
-	int stringToInteger(String s) {
+	private int stringToInteger(String s) {
 		try {
 			return Integer.parseInt(s);
 		}
@@ -442,8 +440,5 @@ public class T04JFrame extends JFrame implements Runnable {
 	}
 
 	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		
-	}
+	public void run() { }
 }

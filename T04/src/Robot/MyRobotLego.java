@@ -16,12 +16,10 @@ public class MyRobotLego {
 	private String name = "";
 	private int relativeSpeed;
 	
-	private RobotLego robot;
+	protected RobotLego robot;
 	private StateMachine machine;
 	private boolean walk = false;
-	private int[] offsets = new int[] {0, 0};
-	
-	//protected final StateMachine stateMachine = new StateMachine(this);
+	protected int[] offsets = new int[] {0, 0};
 
 	public MyRobotLego() {
 		if(LIVE_MODE) { robot = new RobotLego(); }
@@ -36,7 +34,7 @@ public class MyRobotLego {
 	}
 	
 	public int[] getOffsets() {
-		return this.offsets ;
+		return this.offsets;
 	}
 
 	public boolean OpenNXT(String name) {

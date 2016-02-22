@@ -1,16 +1,31 @@
 package GUI;
 
-import Robot.Recorder;
+import Robot.MyRobotLegoRecorder;
 
 @SuppressWarnings("serial")
 public class T05JFrame extends T04JFrame {
-	RecorderJFrame recorderFrame;
+	RobotPlayer recorderFrame;
 	
+	public T05JFrame(MyRobotLegoRecorder robot) {
+		super(robot);
+		recorderFrame = new RobotPlayer(this, robot);
+		new Thread(recorderFrame).start();
+	}
+
 	public static void main(String[] args) {
-		T05JFrame frame = new T05JFrame();
+		new T05JFrame(new MyRobotLegoRecorder());
 	}
 	
-	public T05JFrame() {
-		recorderFrame = new RecorderJFrame(this, new Recorder(super.robotLego));
+	public String getTxtRobot() {
+		return txtRobot.getText();
+	}
+	
+	@Override
+	public void updateGuiComponents() {
+		super.updateGuiComponents();
+		
+		if(recorderFrame != null) {
+			recorderFrame.updateGuiComponents(onOff);
+		}
 	}
 }
