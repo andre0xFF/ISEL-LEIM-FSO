@@ -33,6 +33,10 @@ public class MyRobotLego {
 		return this.name;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public int[] getOffsets() {
 		return this.offsets;
 	}
@@ -61,7 +65,7 @@ public class MyRobotLego {
 	}
 
 	public void Reta(int units, boolean stop) {
-		//System.out.println("Moving forward " + units + " units");
+		System.out.println("Moving forward " + units + " units");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {
@@ -73,7 +77,7 @@ public class MyRobotLego {
 	}
 
 	public void CurvarDireita(int radius, int angle, boolean stop) {
-		//System.out.println("Turning left " + radius + " radius " + angle + " angle");
+		System.out.println("Turning left " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {
@@ -84,7 +88,7 @@ public class MyRobotLego {
 	}
 
 	public void CurvarEsquerda(int radius, int angle, boolean stop) {
-		//System.out.println("Turning right " + radius + " radius " + angle + " angle");
+		System.out.println("Turning right " + radius + " radius " + angle + " angle");
 
 		if (LIVE_MODE) {
 			synchronized(robot) {

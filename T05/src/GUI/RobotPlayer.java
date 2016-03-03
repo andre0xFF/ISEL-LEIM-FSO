@@ -56,13 +56,7 @@ public class RobotPlayer extends JFrame implements Runnable {
 		btnLoadConfig = new JButton("Carregar Configura\u00E7\u00E3o");
 		btnLoadConfig.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				try {
-					robot.loadConfig(t05.getTxtRobot());
-					t05.updateGuiComponents();
-					t05.log("Config loaded: " + robot.getName());
-				} catch (IOException e) {
-					t05.log("Failed to load config: " + robot.getName());
-				}
+				loadRobotConfiguration(t05.getName());
 			}
 		});
 		btnLoadConfig.setBounds(10, 45, 175, 23);
@@ -136,6 +130,16 @@ public class RobotPlayer extends JFrame implements Runnable {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+	}
+
+	public void loadRobotConfiguration(String name) {
+		try {
+			robot.loadConfig(t05.getTxtRobot());
+			t05.updateGuiComponents();
+			t05.log("Config loaded: " + robot.getName());
+		} catch (IOException e) {
+			t05.log("Failed to load config: " + robot.getName());
+		}
 	}
 
 	@Override

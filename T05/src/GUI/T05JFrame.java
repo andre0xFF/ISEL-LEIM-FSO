@@ -28,4 +28,10 @@ public class T05JFrame extends T04JFrame {
 			recorderFrame.updateGuiComponents(onOff);
 		}
 	}
+	
+	@Override
+	public void changeName(String name) {
+		super.changeName(name);
+		recorderFrame.loadRobotConfiguration(name);
+	}
 }

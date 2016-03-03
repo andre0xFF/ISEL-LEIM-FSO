@@ -145,7 +145,9 @@ final class WaitState extends RobotState {
 	protected void end() { }
 
 	@Override
-	protected void log() { System.out.println(LOG); }
+	protected void log() { 
+		//System.out.println(LOG); 
+	}
 }
 
 final class WalkState extends RobotState {

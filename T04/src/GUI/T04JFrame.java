@@ -182,7 +182,7 @@ public class T04JFrame extends JFrame implements Runnable {
 		txtRobot.setText(DEFAULT_ROBOT_NAME);
 		txtRobot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				log("Robot:" + txtRobot.getText());
+				changeName(txtRobot.getText());
 			}
 		});
 		txtRobot.setColumns(10);
@@ -389,6 +389,11 @@ public class T04JFrame extends JFrame implements Runnable {
 		});
 	}
 	
+	protected void changeName(String name) {
+		robotLego.setName(name);
+		log("Robot:" + name);
+	}
+
 	protected void robotOnOff(Boolean status) {
 		onOff = (status == true) ? !robotLego.CloseNXT() : robotLego.OpenNXT(txtRobot.getText());
 		updateGuiComponents();

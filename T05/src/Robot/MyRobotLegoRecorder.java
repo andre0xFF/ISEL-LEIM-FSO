@@ -15,6 +15,7 @@ public class MyRobotLegoRecorder extends MyRobotLego {
 	
 	private ArrayList<String> commands = new ArrayList<String>();
 	private String filePath = "path.txt";
+	private Runner runner;
 	
 	public boolean isRecording() {
 		return isRecording;
@@ -39,6 +40,11 @@ public class MyRobotLegoRecorder extends MyRobotLego {
 	public void togglePlayer() {
 		if(!isPlaying && isRecording) {
 			isRecording = false;
+		}
+		
+		if(isPlaying && runner != null) {
+			runner.deactive();
+			runner = null;
 		}
 		
 		isPlaying = !isPlaying;
@@ -79,49 +85,15 @@ public class MyRobotLegoRecorder extends MyRobotLego {
 		}
 	}
 	
-	private void operateRobot(String cmd, boolean inverse) {
-		String[] s = cmd.split(":");
-		int[] c = new int[s.length];
-		
-		for(int i = 0; i < s.length; i++) {
-			c[i] = Integer.parseInt(s[i]);
-		}
-		
-		SetRelativeSpeed(Integer.parseInt(s[0]));
-		
-		if(inverse) {			
-			c[0] = (c[0] == 1 ? 2 : c[0] == 2 ? 1 : c[0]);
-		}
-		
-		switch(c[0]) {
-			case 0:
-				Reta(Integer.parseInt(s[1]), false);
-				sleep(calculateMovementDelay(c[0], c[1]));
-				break;
-			case 1:	
-				CurvarDireita(Integer.parseInt(s[1]), Integer.parseInt(s[2]), false);
-				sleep(calculateMovementDelay(c[0], c[1], c[2]));
-				break;
-			case 2:
-				CurvarEsquerda(Integer.parseInt(s[1]), Integer.parseInt(s[2]), false);
-				sleep(calculateMovementDelay(c[0], c[1], c[2]));
-				break;
-			case 3:
-				Parar(false);
-				break;
-		}
-	}
-	
 	public void replay(boolean inverse) throws FileNotFoundException, IOException {
+		if(!isPlaying) {
+			togglePlayer();
+		}
+		
 		loadPath();
 		
-		if(inverse) {
-			CurvarEsquerda(180, 0, true);
-		}
-		
-		for(String c : commands) {
-			operateRobot(c, inverse);
-		}
+		runner = new Runner(commands, inverse, this);
+		new Thread(runner).start();
 	}
 	
 	public void savePath() throws IOException {
@@ -171,5 +143,66 @@ public class MyRobotLegoRecorder extends MyRobotLego {
 	public void Parar(boolean trueStop) {
 		saveCommand("3", new int[] { });
 		super.Parar(trueStop);
+	}
+}
+
+class Runner implements Runnable {
+	private boolean inverse;
+	private volatile ArrayList<String> commands;
+	private MyRobotLegoRecorder robot;
+	private boolean active = true;
+	
+	public Runner(ArrayList<String> commands, boolean inverse, MyRobotLegoRecorder robot) {
+		this.inverse = inverse;
+		this.commands = commands;
+		this.robot = robot;
+	}
+	
+	public void deactive() {
+		this.active = false;
+	}
+
+	@Override
+	public void run() {
+		if(inverse) {
+			robot.CurvarEsquerda(180, 0, true);
+		}
+		
+		for(int i = 0; active && i < commands.size(); i++) {
+			operate(commands.get(i), inverse);
+		}
+	}
+	
+	private void operate(String cmd, boolean inverse) {
+		String[] s = cmd.split(":");
+		
+		int[] c = new int[s.length];
+		for(int i = 0; i < s.length; i++) {
+			c[i] = Integer.parseInt(s[i]);
+		}
+		
+		robot.SetRelativeSpeed(c[1]);
+		
+		if(inverse) {			
+			c[0] = (c[0] == 1 ? 2 : c[0] == 2 ? 1 : c[0]);
+		}
+		
+		switch(c[0]) {
+			case 0:
+				robot.Reta(c[2], false);
+				MyRobotLego.sleep(MyRobotLego.calculateMovementDelay(c[1] * 14 / 50, c[2]));
+				break;
+			case 1:	
+				robot.CurvarDireita(c[2], c[3], false);
+				MyRobotLego.sleep(MyRobotLego.calculateMovementDelay(c[1] * 14 / 50, c[2], c[3]));
+				break;
+			case 2:
+				robot.CurvarEsquerda(c[2], c[3], false);
+				MyRobotLego.sleep(MyRobotLego.calculateMovementDelay(c[1] * 14 / 50, c[2], c[3]));
+				break;
+			case 3:
+				robot.Parar(false);
+				break;
+		}
 	}
 }
